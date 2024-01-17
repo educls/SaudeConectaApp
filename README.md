@@ -1,16 +1,14 @@
-# flutter_application_1
+# Flutter - SaudeConecta
 
-A new Flutter project.
 
-## Getting Started
+# Requisitos
 
-This project is a starting point for a Flutter application.
+### Api: <a href="https://github.com/educls/saude-conecta-api/tree/main">SaudeConecta API</a>
 
-A few resources to get you started if this is your first Flutter project:
+### Flutter: <a href="https://docs.flutter.dev/get-started/install">Download</a>
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+# Instalação das Dependencias
+```bash
+flutter pub get
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
