@@ -84,9 +84,7 @@ class _GetReceitasPageState extends State<GetReceitasPage> {
   }
 
   Widget _buildFormReceitas(){
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         body: (_receitas == {} || _receitas!['receitas'] == null)
         ? const Center(child: CircularProgressIndicator())
         : ListView.builder(
@@ -125,7 +123,6 @@ class _GetReceitasPageState extends State<GetReceitasPage> {
           }
 
         ),
-      ),
     );
   }
 }

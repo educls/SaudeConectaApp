@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/atestado_controller.dart';
 import '../utils/date_formater.dart';
-import 'exibir_pdf_page.dart';
+import 'exibir_pdf_atestado_page.dart';
 
 
 class GetAtestadosPage extends StatefulWidget {
@@ -84,9 +84,7 @@ class _GetAtestadosPageState extends State<GetAtestadosPage> {
 
 
   Widget _buildFormAtestados(){
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         body: (_atestados == {} || _atestados!['atestados'] == null)
         ? const Center(child: CircularProgressIndicator())
         :ListView.builder(
@@ -124,7 +122,6 @@ class _GetAtestadosPageState extends State<GetAtestadosPage> {
             );
           }
         ),
-      ),
     );
   }
 }

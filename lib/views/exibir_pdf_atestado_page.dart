@@ -1,28 +1,25 @@
-
-
 import 'package:flutter/material.dart';
-
+import 'dart:io';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:ftpconnect/ftpconnect.dart';
+import 'package:path_provider/path_provider.dart';
 
-import '../utils/get_pdf.dart';
 import '../controllers/save_pdf_controller.dart';
+import '../utils/get_pdf.dart';
 
-
-class ExibirPdfReceitaPage extends StatefulWidget {
-  const ExibirPdfReceitaPage({required this.nomeArquivo, Key? key}) : super(key: key);
+class ExibirPdfPage extends StatefulWidget {
+  const ExibirPdfPage({required this.nomeArquivo, super.key});
   final String nomeArquivo;
 
   @override
-  State<ExibirPdfReceitaPage> createState() => _ExibirPdfReceitaPageState();
+  State<ExibirPdfPage> createState() => _ExibirPdfPageState();
 }
 
-class _ExibirPdfReceitaPageState extends State<ExibirPdfReceitaPage> {
-
-  FetchPdffromFtp fetchPdffromFtp = FetchPdffromFtp();
-  SavePdf savePdf = SavePdf();
-
+class _ExibirPdfPageState extends State<ExibirPdfPage> {
   late String nomeArquivo;
   late String _caminhoDoArquivo = '';
+  SavePdf savePdf = SavePdf();
+  FetchPdffromFtp fetchPdffromFtp = FetchPdffromFtp();
 
   @override
   void initState() {
@@ -32,11 +29,10 @@ class _ExibirPdfReceitaPageState extends State<ExibirPdfReceitaPage> {
     _buscarPdfFromFtp(nomeArquivo);
   }
 
-  void _setCaminho(receitas){
+  void _setCaminho(atestados){
     setState(() {
-      _caminhoDoArquivo = receitas;
+      _caminhoDoArquivo = atestados;
     });
-    print(_caminhoDoArquivo);
   }
 
   Future<void> _buscarPdfFromFtp(nomeArquivo) async{
@@ -46,7 +42,7 @@ class _ExibirPdfReceitaPageState extends State<ExibirPdfReceitaPage> {
   }
 
   Future<void> _salvarPdf() async{
-    await savePdf.savePdfInGalleryReceita(_caminhoDoArquivo, nomeArquivo);
+    await savePdf.savePdfInGalleryAtestado(_caminhoDoArquivo, nomeArquivo);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -59,7 +55,7 @@ class _ExibirPdfReceitaPageState extends State<ExibirPdfReceitaPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Vizualizador Receita'),
+        title: const Text('Vizualizador Atestado'),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
@@ -80,4 +76,5 @@ class _ExibirPdfReceitaPageState extends State<ExibirPdfReceitaPage> {
           )
     );
   }
+
 }
