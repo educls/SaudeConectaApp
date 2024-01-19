@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../utils/class/Theme.dart';
+import '../views/settings_page.dart';
 import '../controllers/consulta_controller.dart';
 import '../controllers/patient_controller.dart';
 import '../controllers/physician_controller.dart';
@@ -110,7 +113,6 @@ class _HomePageState extends State<HomePage>{
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        surfaceTintColor: Colors.lightBlue,
         title: const Text('Consultas Agendadas'),
         leading: IconButton(
           icon: const Icon(Icons.menu),
@@ -142,22 +144,21 @@ class _HomePageState extends State<HomePage>{
   }
 
   Widget _buildForm(){
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         body: (consultas == {} || consultas!['consultas'] == null)
         ? const Center(child: CircularProgressIndicator())
         : ListView.builder(
           itemCount: consultas!['consultas'].length,
           itemBuilder: (BuildContext context, int index) {
             final consulta = consultas['consultas'][index];
-            return
-            Card(
+            return Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
               ),
                 color: (consulta['Estado'] == 'Finalizada') 
-                  ? const Color.fromARGB(255, 200, 236, 158)
+                  ? (Provider.of<ThemeProvider>(context).isDarkMode
+                    ? const Color.fromARGB(255, 116, 116, 116)
+                    : const Color.fromARGB(255, 200, 236, 158))
                   : null,
               elevation: 8,
               margin: const EdgeInsets.all(10.0),
@@ -173,7 +174,7 @@ class _HomePageState extends State<HomePage>{
                 onTap: () async {
                     
                   if(tipo == 'paciente'){
-
+        
                     // PopUpModelForPacient newSchedule = PopUpModelForPacient(
                     //   idConsulta: consulta['ID_Consulta'].toString(),
                     //   idPaciente: consulta['ID_Paciente'].toString(),
@@ -182,7 +183,7 @@ class _HomePageState extends State<HomePage>{
                     //   dataConsulta: dateFormatter.convertToDateTime(consulta['DataConsulta']),
                     //   horaConsulta: consulta['HoraConsulta']
                     // );
-
+        
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -199,7 +200,7 @@ class _HomePageState extends State<HomePage>{
                                   if(response == '200'){
                                     reloadConsultas();
                                   }
-
+        
                               },
                               child: const Text('Excluir'),
                             ),
@@ -216,9 +217,9 @@ class _HomePageState extends State<HomePage>{
                         );
                       },
                     );
-
+        
                   }else{
-
+        
                     PopUpModelForPhysician newAtestado = PopUpModelForPhysician(
                       idConsulta: consulta['ID_Consulta'].toString(), 
                       idPaciente: consulta['ID_Paciente'].toString(), 
@@ -229,7 +230,7 @@ class _HomePageState extends State<HomePage>{
                       dataConsulta: dateFormatter.convertToDateTime(consulta['DataConsulta']), 
                       horaConsulta: consulta['HoraConsulta']
                     );
-
+        
                     showDialog(
                       context: context,
                       barrierDismissible: false,
@@ -300,7 +301,7 @@ class _HomePageState extends State<HomePage>{
                                                   String estado = 'Finalizada';
                                                   
                                                   await changeSateConsulta(consulta['ID_Consulta'].toString(), estado, userToken);
-
+        
                                                   Navigator.of(context).pop();
                                                   
                                                   reloadConsultas();
@@ -325,16 +326,15 @@ class _HomePageState extends State<HomePage>{
                             ),
                           ],
                         );
-                        },
-                      );
-
+                      },
+                    );
+        
                   }
                 },
               ),
             );
           },
         ),
-      ),
     );
   }
 
@@ -436,9 +436,15 @@ class _HomePageState extends State<HomePage>{
             ),
   
             ListTile(
-              title: const Text('Opção 4'),
+              title: const Text('Configurações'),
               onTap: () {
-  
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsPage()
+                  ),
+                );
               },
             ),
             
@@ -538,9 +544,15 @@ class _HomePageState extends State<HomePage>{
                 ),
             
                 ListTile(
-                  title: const Text('Opção 4'),
+                  title: const Text('Configurações'),
                   onTap: () {
-            
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsPage()
+                      ),
+                    );
                   },
                 ),
                 
