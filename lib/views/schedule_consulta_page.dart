@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../controllers/consulta_controller.dart';
 import '../controllers/horario_controller.dart';
@@ -152,205 +153,254 @@ class _ScheduleConsultaState  extends State<ScheduleConsulta> {
   Widget _buildFormConsulta(){
     return Scaffold(
       key: _scaffoldKey,
-      body: ListView(
-        padding: const EdgeInsets.all(15.0),
-        children: <Widget>[
-          const SizedBox(height: 40),
-          SizedBox(
-              width: 50,
-              height: 30,
-              child: Image.network('https://raw.githubusercontent.com/educls/arquivos/main/logo_saude_conecta.png'),
-          ),
-            const SizedBox(
-              height: 50,
-            ),
-            const Text(
-              'Especialidade',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold
-              ),
-            ),
-            ValueListenableBuilder<String>(
-              valueListenable: _dropValue, 
-              builder: (BuildContext context, String value, _) {
-              return DropdownButton<String>(
-                isExpanded: true,
-                hint: const Text("Selecione uma Opção"),
-                value: (value.isEmpty) ? null : value,
-                onChanged: (choice) => {
-                  _dropValue.value = choice.toString(),
-                  _setNomeDropDown(dropdownOptionsEspecialidade[choice.toString()]),
-                  print(dropdownOptionsEspecialidade[choice.toString()])
-                },
-                onTap: () {
-                  setState(() {
-                    dropValueDoctor.value = '';
-                    dropValueHours.value = '';
-                    _selectedDate = DateTime.now();
-                  });
-                },
-                items: dropdownOptionsEspecialidade.keys.map((String op) {
-                  return DropdownMenuItem<String>(
-                    value: op,
-                    child: Text(dropdownOptionsEspecialidade[op]!),
-                  );
-                }).toList(),
-              );
-            }),
-            const SizedBox(height: 20),
-            const Text(
-              'Doutor',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            ValueListenableBuilder<String>(
-              valueListenable: dropValueDoctor, 
-              builder: (BuildContext context, String value, _) {
-              return DropdownButton<String>(
-                isExpanded: true,
-                hint: const Text("Selecione uma Opção"),
-                value: (value.isEmpty) ? null : value,
-                onChanged: (choice) => {
-                  dropValueDoctor.value = choice.toString(),
-                  
-                },
-                onTap: () {
-                  setState(() {
-                    dropValueHours.value = '';
-                    _selectedDate = DateTime.now();
-                  });
-                },
-                items: dropdownOptionsDoutor.keys.map((String op) {
-                  return DropdownMenuItem<String>(
-                    value: op,
-                    child: Text(dropdownOptionsDoutor[op]!),
-                  );
-                }).toList(),
-              );
-            }),
-            const SizedBox(height: 50),
-            const Text(
-              'Disponibilidade',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),  
-            ),
-            const SizedBox(height: 10),
-            TextFormField(
-              readOnly: true,
-              controller: TextEditingController(
-                text: dateFormatter.formatToDDMMYYYY(_selectedDate.toLocal()).split(' ')[0],
-              ),
-              onTap: () {
-                _selectDate(context);
-                setState(() {
-                  dropValueHours.value = '';                 
-                });
-              },
-              decoration: const InputDecoration(
-                labelText: 'Data',
-                hintText: 'Selecione a data',
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Horario',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),ValueListenableBuilder<String>(
-              valueListenable: dropValueHours, 
-              builder: (BuildContext context, String value, _) {
-              return DropdownButton<String>(
-                isExpanded: true,
-                hint: const Text("Selecione um Horario"),
-                value: (value.isEmpty) ? null : value,
-                onChanged: (choice) => {
-                  dropValueHours.value = choice.toString(),
-                  
-                },
-                items: dropdownOptionsHours.keys.map((String op) {
-                  return DropdownMenuItem<String>(
-                    value: op,
-                    child: Text(dropdownOptionsHours[op]!),
-                  );
-                }).toList(),
-              );
-            }),
-            const SizedBox(height: 20),
-          
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () async {
-                _setLoading(true);
-      
-                  String idMedico = dropValueDoctor.value;
-                  String especialidade = dropdownOptionsEspecialidade![_dropValue.value].toString();
-                  String data = dateFormatter.formatToDDMMYYYY(_selectedDate);
-                  String dataFormatDB = dateFormatter.formatToYYYYMMDD(data);
-                  String hora = dropValueHours.value;
-      
-                  bool response = await cadastraConsulta(idMedico, especialidade, dataFormatDB, hora, userToken);
-      
-                  Timer(const Duration(milliseconds: 200), () async {
-                
-                    if(response){
-                      // ignore: use_build_context_synchronously
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Consulta Agendada'),
-                            content: Text('$especialidade \nData: $data \nHora: $hora'),
-                            actions: [
-                              TextButton(
-                                onPressed: () async {
-                                  Navigator.of(context).pop();
-                                  
-                                  _setLoading(false);
-                                },
-                                child: const Text('Fechar'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-      
-                    }else{
-                      showDialog(
-                        context: context, 
-                        builder: (BuildContext context) {
-                          return const AlertDialog(
-                            title: Text('Erro ao Agendar Consulta'),
-                          );
-                        }
-                      );
-                    }
-                  });
-                  _dropValue.value = '';
-                  dropValueDoctor.value = '';
-                  _selectedDate = DateTime.now();
-                  dropValueHours.value = '';
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromRGBO(75, 57, 239, 1),
-                minimumSize: const Size(70, 50)
-              ),
-              child: const Text(
-                'Agendar',
-                style: TextStyle(
-                  color: Colors.white,
+      body: SingleChildScrollView(
+        child: AnimationLimiter(
+          child: Column(
+            children: AnimationConfiguration.toStaggeredList(
+              childAnimationBuilder: (widget) => SlideAnimation(
+                horizontalOffset: 50.0,
+                child: FadeInAnimation(child: widget),
+              ), 
+              children: [
+                const SizedBox(height: 40),
+                SizedBox(
+                    width: 260,
+                    height: 50,
+                    child: Image.network('https://raw.githubusercontent.com/educls/arquivos/main/logo_saude_conecta.png'),
                 ),
-              ),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                          'Especialidade',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    child: ValueListenableBuilder<String>(
+                    valueListenable: _dropValue, 
+                    builder: (BuildContext context, String value, _) {
+                    return DropdownButton<String>(
+                      isExpanded: true,
+                      hint: const Text("Selecione uma Opção"),
+                      value: (value.isEmpty) ? null : value,
+                      onChanged: (choice) => {
+                        _dropValue.value = choice.toString(),
+                        _setNomeDropDown(dropdownOptionsEspecialidade[choice.toString()]),
+                        print(dropdownOptionsEspecialidade[choice.toString()])
+                      },
+                      onTap: () {
+                        setState(() {
+                          dropValueDoctor.value = '';
+                          dropValueHours.value = '';
+                          _selectedDate = DateTime.now();
+                        });
+                      },
+                      items: dropdownOptionsEspecialidade.keys.map((String op) {
+                        return DropdownMenuItem<String>(
+                          value: op,
+                          child: Text(dropdownOptionsEspecialidade[op]!),
+                        );
+                      }).toList(),
+                    );
+                  }),
+                  ),
+                  const SizedBox(height: 20),
+                  const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                          'Doutor',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    child: ValueListenableBuilder<String>(
+                    valueListenable: dropValueDoctor, 
+                    builder: (BuildContext context, String value, _) {
+                    return DropdownButton<String>(
+                      isExpanded: true,
+                      hint: const Text("Selecione uma Opção"),
+                      value: (value.isEmpty) ? null : value,
+                      onChanged: (choice) => {
+                        dropValueDoctor.value = choice.toString(),
+                        
+                      },
+                      onTap: () {
+                        setState(() {
+                          dropValueHours.value = '';
+                          _selectedDate = DateTime.now();
+                        });
+                      },
+                      items: dropdownOptionsDoutor.keys.map((String op) {
+                        return DropdownMenuItem<String>(
+                          value: op,
+                          child: Text(dropdownOptionsDoutor[op]!),
+                        );
+                      }).toList(),
+                    );
+                  }),
+                  ),
+                  const SizedBox(height: 50),
+                  const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                          'Disponibilidade',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),  
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    child: TextFormField(
+                    readOnly: true,
+                    controller: TextEditingController(
+                      text: dateFormatter.formatToDDMMYYYY(_selectedDate.toLocal()).split(' ')[0],
+                    ),
+                    onTap: () {
+                      _selectDate(context);
+                      setState(() {
+                        dropValueHours.value = '';                 
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Data',
+                      hintText: 'Selecione a data',
+                    ),
+                  ),
+                  ),
+                  const SizedBox(height: 30),
+                  const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                          'Horario',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    child: ValueListenableBuilder<String>(
+                    valueListenable: dropValueHours, 
+                    builder: (BuildContext context, String value, _) {
+                    return DropdownButton<String>(
+                      isExpanded: true,
+                      hint: const Text("Selecione um Horario"),
+                      value: (value.isEmpty) ? null : value,
+                      onChanged: (choice) => {
+                        dropValueHours.value = choice.toString(),
+                        
+                      },
+                      items: dropdownOptionsHours.keys.map((String op) {
+                        return DropdownMenuItem<String>(
+                          value: op,
+                          child: Text(dropdownOptionsHours[op]!),
+                        );
+                      }).toList(),
+                    );
+                  }),
+                  ),
+                
+                  const SizedBox(height: 60),
+                  ElevatedButton(
+                    onPressed: () async {
+                      _setLoading(true);
+            
+                        String idMedico = dropValueDoctor.value;
+                        String especialidade = dropdownOptionsEspecialidade![_dropValue.value].toString();
+                        String data = dateFormatter.formatToDDMMYYYY(_selectedDate);
+                        String dataFormatDB = dateFormatter.formatToYYYYMMDD(data);
+                        String hora = dropValueHours.value;
+            
+                        bool response = await cadastraConsulta(idMedico, especialidade, dataFormatDB, hora, userToken);
+            
+                        Timer(const Duration(milliseconds: 200), () async {
+                      
+                          if(response){
+                            // ignore: use_build_context_synchronously
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Consulta Agendada'),
+                                  content: Text('$especialidade \nData: $data \nHora: $hora'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+                                        
+                                        _setLoading(false);
+                                      },
+                                      child: const Text('Fechar'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+            
+                          }else{
+                            showDialog(
+                              context: context, 
+                              builder: (BuildContext context) {
+                                return const AlertDialog(
+                                  title: Text('Erro ao Agendar Consulta'),
+                                );
+                              }
+                            );
+                          }
+                        });
+                        _dropValue.value = '';
+                        dropValueDoctor.value = '';
+                        _selectedDate = DateTime.now();
+                        dropValueHours.value = '';
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(75, 57, 239, 1),
+                      minimumSize: const Size(350, 50)
+                    ),
+                    child: const Text(
+                      'Agendar',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+              ]
             ),
-        ],
-      ),
+          )
+        ),
+      )
     );
   }
 

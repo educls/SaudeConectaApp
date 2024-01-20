@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/views/edit_user_page.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/class/Theme.dart';
@@ -18,6 +19,7 @@ import 'medicamentos_page.dart';
 import 'receita_medica_page.dart';
 import 'schedule_consulta_page.dart';
 import 'sign_In_page.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 
 
@@ -144,197 +146,215 @@ class _HomePageState extends State<HomePage>{
   }
 
   Widget _buildForm(){
-    return Scaffold(
-        body: (consultas == {} || consultas!['consultas'] == null)
-        ? const Center(child: CircularProgressIndicator())
-        : ListView.builder(
-          itemCount: consultas!['consultas'].length,
-          itemBuilder: (BuildContext context, int index) {
-            final consulta = consultas['consultas'][index];
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-                color: (consulta['Estado'] == 'Finalizada') 
-                  ? (Provider.of<ThemeProvider>(context).isDarkMode
-                    ? const Color.fromARGB(255, 116, 116, 116)
-                    : const Color.fromARGB(255, 200, 236, 158))
-                  : null,
-              elevation: 8,
-              margin: const EdgeInsets.all(10.0),
-              child: ListTile(
-                title: Text(
-                (tipo == 'paciente')
-                  ? '${consulta['Especialidade']} \n ${dateFormatter.convertToDateTime(consulta['DataConsulta'])} \n ${consulta['HoraConsulta']}'
-                  : 'Paciente: ${consulta['NomePaciente']} \n ${dateFormatter.convertToDateTime(consulta['DataConsulta'])} \n ${consulta['HoraConsulta']}'
-                ),
-                trailing: Text(
-                  'Estado: ${consulta['Estado']}'
-                ),
-                onTap: () async {
-                    
-                  if(tipo == 'paciente'){
-        
-                    // PopUpModelForPacient newSchedule = PopUpModelForPacient(
-                    //   idConsulta: consulta['ID_Consulta'].toString(),
-                    //   idPaciente: consulta['ID_Paciente'].toString(),
-                    //   idMedico: consulta['ID_Medico'].toString(),
-                    //   especialidade: consulta['Especialidade'], 
-                    //   dataConsulta: dateFormatter.convertToDateTime(consulta['DataConsulta']),
-                    //   horaConsulta: consulta['HoraConsulta']
-                    // );
-        
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(consulta['Especialidade']),
-                          content: Text('Data: ${dateFormatter.convertToDateTime(consulta['DataConsulta'])} \nHora: ${consulta['HoraConsulta']}'),
-                          actions: [
-                            TextButton(
-                              onPressed: () async {
-                                  _setLoading(true);
-                                  Navigator.of(context).pop();
-                                  var response = await deleteConsulta(userToken, consulta['ID_Consulta'].toString());
-                                  
-                                  if(response == '200'){
-                                    reloadConsultas();
-                                  }
-        
-                              },
-                              child: const Text('Excluir'),
+    return Stack(
+      children: [
+        Scaffold(
+          body: (consultas == {} || consultas!['consultas'] == null)
+          ? const Center(child: CircularProgressIndicator())
+          : AnimationLimiter(
+            child: ListView.builder(
+              itemCount: consultas!['consultas'].length,
+              itemBuilder: (BuildContext context, int index) {
+                final consulta = consultas['consultas'][index];
+                return AnimationConfiguration.staggeredList(
+                  position: index, 
+                  duration: const Duration(milliseconds: 500),
+                  child: SlideAnimation(
+                    verticalOffset: 50.0,
+                    child: FadeInAnimation(
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                          color: (consulta['Estado'] == 'Finalizada') 
+                            ? (Provider.of<ThemeProvider>(context).isDarkMode
+                              ? const Color.fromARGB(255, 116, 116, 116)
+                              : const Color.fromARGB(255, 200, 236, 158))
+                            : null,
+                        elevation: 8,
+                        margin: const EdgeInsets.all(10.0),
+                        child: ListTile(
+                          title: Text(
+                          (tipo == 'paciente')
+                            ? '${consulta['Especialidade']} \n ${dateFormatter.convertToDateTime(consulta['DataConsulta'])} \n ${consulta['HoraConsulta']}'
+                            : 'Paciente: ${consulta['NomePaciente']} \n ${dateFormatter.convertToDateTime(consulta['DataConsulta'])} \n ${consulta['HoraConsulta']}'
+                          ),
+                          trailing: Text(
+                            'Estado: \n${consulta['Estado']}',
+                            style: const TextStyle(
+                              fontSize: 16
                             ),
-                            Card(
-                              elevation: 2,
-                              child: TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Voltar'),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-        
-                  }else{
-        
-                    PopUpModelForPhysician newAtestado = PopUpModelForPhysician(
-                      idConsulta: consulta['ID_Consulta'].toString(), 
-                      idPaciente: consulta['ID_Paciente'].toString(), 
-                      nomePaciente: consulta['NomePaciente'], 
-                      idMedico: consulta['ID_Medico'].toString(), 
-                      nomeMedico: consulta['NomeMedico'], 
-                      especialidade: consulta['Especialidade'], 
-                      dataConsulta: dateFormatter.convertToDateTime(consulta['DataConsulta']), 
-                      horaConsulta: consulta['HoraConsulta']
-                    );
-        
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(newAtestado.nomePaciente),
-                          content: Text('Data: ${newAtestado.dataConsulta} \nHora: ${newAtestado.horaConsulta}'),
-                          actions: [
-                            Column(
-                              children: <Widget>[
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Card(
-                                      elevation: 2,
-                                      child: TextButton(
+                          ),
+                          onTap: () async {
+                              
+                            if(tipo == 'paciente'){
+                  
+                              // PopUpModelForPacient newSchedule = PopUpModelForPacient(
+                              //   idConsulta: consulta['ID_Consulta'].toString(),
+                              //   idPaciente: consulta['ID_Paciente'].toString(),
+                              //   idMedico: consulta['ID_Medico'].toString(),
+                              //   especialidade: consulta['Especialidade'], 
+                              //   dataConsulta: dateFormatter.convertToDateTime(consulta['DataConsulta']),
+                              //   horaConsulta: consulta['HoraConsulta']
+                              // );
+                  
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text(consulta['Especialidade']),
+                                    content: Text('Data: ${dateFormatter.convertToDateTime(consulta['DataConsulta'])} \nHora: ${consulta['HoraConsulta']}'),
+                                    actions: [
+                                      TextButton(
                                         onPressed: () async {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => AtestadoPage(newAtestado: newAtestado, userToken: userToken)
-                                            ),
-                                          );
+                                            _setLoading(true);
+                                            Navigator.of(context).pop();
+                                            var response = await deleteConsulta(userToken, consulta['ID_Consulta'].toString());
+                                            
+                                            if(response == '200'){
+                                              reloadConsultas();
+                                            }
+                  
                                         },
-                                      child: const Text('Atestar'),
-                                    ),
-                                    ),
-                                    Card(
-                                      elevation: 2,
-                                      child: TextButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => ReceitaMedicaPage(newAtestado: newAtestado, userToken: userToken)
-                                            ),
-                                          );
-                                        },
-                                        child: const Text('Receitar'),
+                                        child: const Text('Excluir'),
                                       ),
-                                    ),
-                                    Card(
-                                      elevation: 2,
-                                      child: TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('Voltar'),
+                                      Card(
+                                        elevation: 2,
+                                        child: TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('Voltar'),
+                                        ),
                                       ),
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                Card(
-                                  elevation: 8,
-                                  child: TextButton(
-                                    onPressed: () async {
-                                      Navigator.of(context).pop();
-                                      showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: const Text('Tem Certeza?'),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () async {
-                                                  String estado = 'Finalizada';
-                                                  
-                                                  await changeSateConsulta(consulta['ID_Consulta'].toString(), estado, userToken);
-        
-                                                  Navigator.of(context).pop();
-                                                  
-                                                  reloadConsultas();
-                                                },
-                                                child: const Text('Sim'),
+                                    ],
+                                  );
+                                },
+                              );
+                  
+                            }else{
+                  
+                              PopUpModelForPhysician newAtestado = PopUpModelForPhysician(
+                                idConsulta: consulta['ID_Consulta'].toString(), 
+                                idPaciente: consulta['ID_Paciente'].toString(), 
+                                nomePaciente: consulta['NomePaciente'], 
+                                idMedico: consulta['ID_Medico'].toString(), 
+                                nomeMedico: consulta['NomeMedico'], 
+                                especialidade: consulta['Especialidade'], 
+                                dataConsulta: dateFormatter.convertToDateTime(consulta['DataConsulta']), 
+                                horaConsulta: consulta['HoraConsulta']
+                              );
+                  
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text(newAtestado.nomePaciente),
+                                    content: Text('Data: ${newAtestado.dataConsulta} \nHora: ${newAtestado.horaConsulta}'),
+                                    actions: [
+                                      Column(
+                                        children: <Widget>[
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                              Card(
+                                                elevation: 2,
+                                                child: TextButton(
+                                                  onPressed: () async {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => AtestadoPage(newAtestado: newAtestado, userToken: userToken)
+                                                      ),
+                                                    );
+                                                  },
+                                                child: const Text('Atestar'),
                                               ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const Text('Não'),
                                               ),
+                                              Card(
+                                                elevation: 2,
+                                                child: TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => ReceitaMedicaPage(newAtestado: newAtestado, userToken: userToken)
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text('Receitar'),
+                                                ),
+                                              ),
+                                              Card(
+                                                elevation: 2,
+                                                child: TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('Voltar'),
+                                                ),
+                                              )
                                             ],
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: const Text('Finalizar Consulta'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
-                    );
-        
-                  }
-                },
-              ),
-            );
-          },
+                                          ),
+                                          const SizedBox(height: 20),
+                                          Card(
+                                            elevation: 8,
+                                            child: TextButton(
+                                              onPressed: () async {
+                                                Navigator.of(context).pop();
+                                                showDialog(
+                                                  context: context,
+                                                  barrierDismissible: false,
+                                                  builder: (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text('Tem Certeza?'),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed: () async {
+                                                            String estado = 'Finalizada';
+                                                            
+                                                            await changeSateConsulta(consulta['ID_Consulta'].toString(), estado, userToken);
+                  
+                                                            Navigator.of(context).pop();
+                                                            
+                                                            reloadConsultas();
+                                                          },
+                                                          child: const Text('Sim'),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          child: const Text('Não'),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              child: const Text('Finalizar Consulta'),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                  
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  )
+                );
+              },
+            ),
+          ),
         ),
+      ],
     );
   }
 
@@ -351,31 +371,55 @@ class _HomePageState extends State<HomePage>{
                   end: Alignment.bottomCenter,
                 )
               ),
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.person,
-                    size: 50,
-                    color: Colors.white,
+                  const Row(
+                    children: [
+                      Icon(
+                        Icons.person,
+                        size: 50,
+                        color: Colors.white,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const EditUserPage()
+                            ),
+                          );
+                        }, 
+                        icon: const Icon(Icons.edit)
+                      ),
+                    ],
                   ),
-                  Text(
-                    _email == " " ? _especialidade : _email,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
+                  Row(
+                    children: [
+                      Text(
+                        _email == " " ? _especialidade : _email,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
