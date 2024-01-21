@@ -12,6 +12,7 @@ import 'homePage.dart';
 import 'password_recovery_page.dart';
 import 'sign_Up_page.dart';
 import 'package:wave/wave.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -81,8 +82,16 @@ class _SignInPageState extends State<SignInPage> {
                   SizedBox(
                     width: 260,
                     height: 50,
-                    child: Image.network(
-                        'https://raw.githubusercontent.com/educls/arquivos/main/logo_saude_conecta.png'),
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          "https://raw.githubusercontent.com/educls/arquivos/main/logo_saude_conecta.png",
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                              CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
                   ),
                   const SizedBox(
                     height: 20,
@@ -275,8 +284,16 @@ class _SignInPageState extends State<SignInPage> {
                 SizedBox(
                   width: 260,
                   height: 50,
-                  child: Image.network(
-                      'https://raw.githubusercontent.com/educls/arquivos/main/logo_saude_conecta.png'),
+                child: CachedNetworkImage(
+                      imageUrl:
+                          "https://raw.githubusercontent.com/educls/arquivos/main/logo_saude_conecta.png",
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                              CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
                 ),
                 const SizedBox(
                   height: 20,

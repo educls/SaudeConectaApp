@@ -107,4 +107,29 @@ class FetchApiPatient{
     return retornoNull;
   }
 
+  Future<Map<String, dynamic>> fetchInfoPatientEndereco(String token) async {
+    String url = '${AppConstants.baseUrlApi}/usuarios/get_info_endereco';
+    Map<String, dynamic> retornoNull = {};
+    try{
+      final response = await http.get(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': token,
+        }
+      );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData);
+        
+        return responseData;
+      } else {
+        print('Falha na requisição: ${response.statusCode}');
+      }
+    }catch(err){
+      print('Erro na requisição: $err');
+    }
+    return retornoNull;
+  }
+
 }

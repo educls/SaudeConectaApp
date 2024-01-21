@@ -3,15 +3,22 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:provider/provider.dart';
 
 import '../controllers/consulta_controller.dart';
 import '../controllers/horario_controller.dart';
+import '../utils/class/Theme.dart';
 import '../utils/date_formater.dart';
 import '../utils/gera_string.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ScheduleConsulta extends StatefulWidget {
-  const ScheduleConsulta({required this.dropdownOptionsEspecialidade, required this.userToken, Key? key, required this.medInfos}) : super(key: key);
+  const ScheduleConsulta(
+      {required this.dropdownOptionsEspecialidade,
+      required this.userToken,
+      Key? key,
+      required this.medInfos})
+      : super(key: key);
 
   final Map<String, dynamic> dropdownOptionsEspecialidade;
   final Map<String, dynamic> medInfos;
@@ -20,13 +27,12 @@ class ScheduleConsulta extends StatefulWidget {
   _ScheduleConsultaState createState() => _ScheduleConsultaState();
 }
 
-class _ScheduleConsultaState  extends State<ScheduleConsulta> {
-
+class _ScheduleConsultaState extends State<ScheduleConsulta> {
   DateTime _selectedDate = DateTime.now();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   RandomStringGenerator generator = RandomStringGenerator();
-  
+
   DateFormatter dateFormatter = DateFormatter();
   late String userToken;
   final ValueNotifier<String> _dropValue = ValueNotifier<String>('');
@@ -59,7 +65,6 @@ class _ScheduleConsultaState  extends State<ScheduleConsulta> {
     '17:00:00': '17:00',
     '17:30:00': '17:30',
   };
-  
 
   @override
   void initState() {
@@ -70,28 +75,27 @@ class _ScheduleConsultaState  extends State<ScheduleConsulta> {
     dropdownOptionsHoursBackup = Map.from(dropdownOptionsHours);
 
     print(medInfos);
-
   }
-
 
   void _setNomeDropDown(choice) {
     print(dropdownOptionsEspecialidade);
     setState(() {
       dropdownOptionsDoutor = {};
       for (var medico in medInfos['medicoInfos']) {
-        if(medico['Especialidade'] == choice){
-
-          dropdownOptionsDoutor[medico['ID_Medico'].toString()] = 'Dr. ${medico['Nome']}';
+        if (medico['Especialidade'] == choice) {
+          dropdownOptionsDoutor[medico['ID_Medico'].toString()] =
+              'Dr. ${medico['Nome']}';
         }
       }
     });
   }
 
-  void _setHorariosDropDown() async{
-      String data = dateFormatter.formatToYYYYMMDD(dateFormatter.convertToDateTime('$_selectedDate'));
-      String idMedico = dropValueDoctor.value;
+  void _setHorariosDropDown() async {
+    String data = dateFormatter
+        .formatToYYYYMMDD(dateFormatter.convertToDateTime('$_selectedDate'));
+    String idMedico = dropValueDoctor.value;
 
-      returnHorarios = await buscaHorariosDisponiveis(data, idMedico);
+    returnHorarios = await buscaHorariosDisponiveis(data, idMedico);
     setState(() {
       dropdownOptionsHours = Map.from(dropdownOptionsHoursBackup);
 
@@ -115,7 +119,6 @@ class _ScheduleConsultaState  extends State<ScheduleConsulta> {
       setState(() {
         _selectedDate = picked;
       });
-      
 
       _setHorariosDropDown();
     }
@@ -128,46 +131,57 @@ class _ScheduleConsultaState  extends State<ScheduleConsulta> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agendar Consulta',
+        title: const Text(
+          'Agendar Consulta',
           style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold),
+            fontSize: 20,
+          ),
         ),
+        backgroundColor: Provider.of<ThemeProvider>(context).isDarkMode
+            ? const Color.fromARGB(255, 35, 35, 36)
+            : const Color.fromARGB(255, 54, 158, 255),
       ),
       body: Stack(
         children: [
           _isLoading == false
-          ? _buildFormConsulta()
-          : const Center(child: CircularProgressIndicator())
+              ? _buildFormConsulta()
+              : const Center(child: CircularProgressIndicator())
         ],
       ),
     );
   }
 
-
-  Widget _buildFormConsulta(){
+  Widget _buildFormConsulta() {
     return Scaffold(
-      key: _scaffoldKey,
-      body: SingleChildScrollView(
-        child: AnimationLimiter(
-          child: Column(
+        key: _scaffoldKey,
+        body: SingleChildScrollView(
+          child: AnimationLimiter(
+              child: Column(
             children: AnimationConfiguration.toStaggeredList(
-              childAnimationBuilder: (widget) => SlideAnimation(
-                horizontalOffset: 50.0,
-                child: FadeInAnimation(child: widget),
-              ), 
-              children: [
-                const SizedBox(height: 40),
-                SizedBox(
+                childAnimationBuilder: (widget) => SlideAnimation(
+                      horizontalOffset: 50.0,
+                      child: FadeInAnimation(child: widget),
+                    ),
+                children: [
+                  const SizedBox(height: 40),
+                  SizedBox(
                     width: 260,
                     height: 50,
-                    child: Image.network('https://raw.githubusercontent.com/educls/arquivos/main/logo_saude_conecta.png'),
-                ),
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          "https://raw.githubusercontent.com/educls/arquivos/main/logo_saude_conecta.png",
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                              CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                  ),
                   const SizedBox(
                     height: 50,
                   ),
@@ -178,9 +192,7 @@ class _ScheduleConsultaState  extends State<ScheduleConsulta> {
                         child: Text(
                           'Especialidade',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                          ),
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -188,32 +200,35 @@ class _ScheduleConsultaState  extends State<ScheduleConsulta> {
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: ValueListenableBuilder<String>(
-                    valueListenable: _dropValue, 
-                    builder: (BuildContext context, String value, _) {
-                    return DropdownButton<String>(
-                      isExpanded: true,
-                      hint: const Text("Selecione uma Opção"),
-                      value: (value.isEmpty) ? null : value,
-                      onChanged: (choice) => {
-                        _dropValue.value = choice.toString(),
-                        _setNomeDropDown(dropdownOptionsEspecialidade[choice.toString()]),
-                        print(dropdownOptionsEspecialidade[choice.toString()])
-                      },
-                      onTap: () {
-                        setState(() {
-                          dropValueDoctor.value = '';
-                          dropValueHours.value = '';
-                          _selectedDate = DateTime.now();
-                        });
-                      },
-                      items: dropdownOptionsEspecialidade.keys.map((String op) {
-                        return DropdownMenuItem<String>(
-                          value: op,
-                          child: Text(dropdownOptionsEspecialidade[op]!),
-                        );
-                      }).toList(),
-                    );
-                  }),
+                        valueListenable: _dropValue,
+                        builder: (BuildContext context, String value, _) {
+                          return DropdownButton<String>(
+                            isExpanded: true,
+                            hint: const Text("Selecione uma Opção"),
+                            value: (value.isEmpty) ? null : value,
+                            onChanged: (choice) => {
+                              _dropValue.value = choice.toString(),
+                              _setNomeDropDown(dropdownOptionsEspecialidade[
+                                  choice.toString()]),
+                              print(dropdownOptionsEspecialidade[
+                                  choice.toString()])
+                            },
+                            onTap: () {
+                              setState(() {
+                                dropValueDoctor.value = '';
+                                dropValueHours.value = '';
+                                _selectedDate = DateTime.now();
+                              });
+                            },
+                            items: dropdownOptionsEspecialidade.keys
+                                .map((String op) {
+                              return DropdownMenuItem<String>(
+                                value: op,
+                                child: Text(dropdownOptionsEspecialidade[op]!),
+                              );
+                            }).toList(),
+                          );
+                        }),
                   ),
                   const SizedBox(height: 20),
                   const Row(
@@ -233,30 +248,29 @@ class _ScheduleConsultaState  extends State<ScheduleConsulta> {
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: ValueListenableBuilder<String>(
-                    valueListenable: dropValueDoctor, 
-                    builder: (BuildContext context, String value, _) {
-                    return DropdownButton<String>(
-                      isExpanded: true,
-                      hint: const Text("Selecione uma Opção"),
-                      value: (value.isEmpty) ? null : value,
-                      onChanged: (choice) => {
-                        dropValueDoctor.value = choice.toString(),
-                        
-                      },
-                      onTap: () {
-                        setState(() {
-                          dropValueHours.value = '';
-                          _selectedDate = DateTime.now();
-                        });
-                      },
-                      items: dropdownOptionsDoutor.keys.map((String op) {
-                        return DropdownMenuItem<String>(
-                          value: op,
-                          child: Text(dropdownOptionsDoutor[op]!),
-                        );
-                      }).toList(),
-                    );
-                  }),
+                        valueListenable: dropValueDoctor,
+                        builder: (BuildContext context, String value, _) {
+                          return DropdownButton<String>(
+                            isExpanded: true,
+                            hint: const Text("Selecione uma Opção"),
+                            value: (value.isEmpty) ? null : value,
+                            onChanged: (choice) => {
+                              dropValueDoctor.value = choice.toString(),
+                            },
+                            onTap: () {
+                              setState(() {
+                                dropValueHours.value = '';
+                                _selectedDate = DateTime.now();
+                              });
+                            },
+                            items: dropdownOptionsDoutor.keys.map((String op) {
+                              return DropdownMenuItem<String>(
+                                value: op,
+                                child: Text(dropdownOptionsDoutor[op]!),
+                              );
+                            }).toList(),
+                          );
+                        }),
                   ),
                   const SizedBox(height: 50),
                   const Row(
@@ -268,7 +282,7 @@ class _ScheduleConsultaState  extends State<ScheduleConsulta> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                          ),  
+                          ),
                         ),
                       )
                     ],
@@ -277,21 +291,23 @@ class _ScheduleConsultaState  extends State<ScheduleConsulta> {
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: TextFormField(
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: dateFormatter.formatToDDMMYYYY(_selectedDate.toLocal()).split(' ')[0],
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text: dateFormatter
+                            .formatToDDMMYYYY(_selectedDate.toLocal())
+                            .split(' ')[0],
+                      ),
+                      onTap: () {
+                        _selectDate(context);
+                        setState(() {
+                          dropValueHours.value = '';
+                        });
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Data',
+                        hintText: 'Selecione a data',
+                      ),
                     ),
-                    onTap: () {
-                      _selectDate(context);
-                      setState(() {
-                        dropValueHours.value = '';                 
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      labelText: 'Data',
-                      hintText: 'Selecione a data',
-                    ),
-                  ),
                   ),
                   const SizedBox(height: 30),
                   const Row(
@@ -311,84 +327,84 @@ class _ScheduleConsultaState  extends State<ScheduleConsulta> {
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: ValueListenableBuilder<String>(
-                    valueListenable: dropValueHours, 
-                    builder: (BuildContext context, String value, _) {
-                    return DropdownButton<String>(
-                      isExpanded: true,
-                      hint: const Text("Selecione um Horario"),
-                      value: (value.isEmpty) ? null : value,
-                      onChanged: (choice) => {
-                        dropValueHours.value = choice.toString(),
-                        
-                      },
-                      items: dropdownOptionsHours.keys.map((String op) {
-                        return DropdownMenuItem<String>(
-                          value: op,
-                          child: Text(dropdownOptionsHours[op]!),
-                        );
-                      }).toList(),
-                    );
-                  }),
+                        valueListenable: dropValueHours,
+                        builder: (BuildContext context, String value, _) {
+                          return DropdownButton<String>(
+                            isExpanded: true,
+                            hint: const Text("Selecione um Horario"),
+                            value: (value.isEmpty) ? null : value,
+                            onChanged: (choice) => {
+                              dropValueHours.value = choice.toString(),
+                            },
+                            items: dropdownOptionsHours.keys.map((String op) {
+                              return DropdownMenuItem<String>(
+                                value: op,
+                                child: Text(dropdownOptionsHours[op]!),
+                              );
+                            }).toList(),
+                          );
+                        }),
                   ),
-                
                   const SizedBox(height: 60),
                   ElevatedButton(
                     onPressed: () async {
                       _setLoading(true);
-            
-                        String idMedico = dropValueDoctor.value;
-                        String especialidade = dropdownOptionsEspecialidade![_dropValue.value].toString();
-                        String data = dateFormatter.formatToDDMMYYYY(_selectedDate);
-                        String dataFormatDB = dateFormatter.formatToYYYYMMDD(data);
-                        String hora = dropValueHours.value;
-            
-                        bool response = await cadastraConsulta(idMedico, especialidade, dataFormatDB, hora, userToken);
-            
-                        Timer(const Duration(milliseconds: 200), () async {
-                      
-                          if(response){
-                            // ignore: use_build_context_synchronously
-                            showDialog(
+
+                      String idMedico = dropValueDoctor.value;
+                      String especialidade =
+                          dropdownOptionsEspecialidade![_dropValue.value]
+                              .toString();
+                      String data =
+                          dateFormatter.formatToDDMMYYYY(_selectedDate);
+                      String dataFormatDB =
+                          dateFormatter.formatToYYYYMMDD(data);
+                      String hora = dropValueHours.value;
+
+                      bool response = await cadastraConsulta(idMedico,
+                          especialidade, dataFormatDB, hora, userToken);
+
+                      Timer(const Duration(milliseconds: 200), () async {
+                        if (response) {
+                          // ignore: use_build_context_synchronously
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Consulta Agendada'),
+                                content: Text(
+                                    '$especialidade \nData: $data \nHora: $hora'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () async {
+                                      Navigator.of(context).pop();
+
+                                      _setLoading(false);
+                                    },
+                                    child: const Text('Fechar'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          showDialog(
                               context: context,
-                              barrierDismissible: false,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Consulta Agendada'),
-                                  content: Text('$especialidade \nData: $data \nHora: $hora'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () async {
-                                        Navigator.of(context).pop();
-                                        
-                                        _setLoading(false);
-                                      },
-                                      child: const Text('Fechar'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-            
-                          }else{
-                            showDialog(
-                              context: context, 
                               builder: (BuildContext context) {
                                 return const AlertDialog(
                                   title: Text('Erro ao Agendar Consulta'),
                                 );
-                              }
-                            );
-                          }
-                        });
-                        _dropValue.value = '';
-                        dropValueDoctor.value = '';
-                        _selectedDate = DateTime.now();
-                        dropValueHours.value = '';
+                              });
+                        }
+                      });
+                      _dropValue.value = '';
+                      dropValueDoctor.value = '';
+                      _selectedDate = DateTime.now();
+                      dropValueHours.value = '';
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(75, 57, 239, 1),
-                      minimumSize: const Size(350, 50)
-                    ),
+                        backgroundColor: const Color.fromRGBO(75, 57, 239, 1),
+                        minimumSize: const Size(350, 50)),
                     child: const Text(
                       'Agendar',
                       style: TextStyle(
@@ -396,16 +412,8 @@ class _ScheduleConsultaState  extends State<ScheduleConsulta> {
                       ),
                     ),
                   ),
-              ]
-            ),
-          )
-        ),
-      )
-    );
+                ]),
+          )),
+        ));
   }
-
-
-
 }
-
-

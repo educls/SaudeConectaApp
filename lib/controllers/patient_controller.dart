@@ -39,6 +39,13 @@ Future<Map<String, dynamic>> getInfosUserPatient(String token) async{
   return response;
 }
 
+Future<Map<String, dynamic>> getInfosUserEndereco(String token) async{
+  
+  Map<String, dynamic> response = await fetchApiPatient.fetchInfoPatientEndereco(token);
+
+  return response;
+}
+
 bool returFalse(){
   return false;
 }
