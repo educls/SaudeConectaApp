@@ -225,6 +225,7 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   TextButton(
                     onPressed: () {
+                      Navigator.of(context).pop();
                       Navigator.push(
                         context,
                         MaterialPageRoute(

@@ -627,7 +627,8 @@ class _HomePageState extends State<HomePage> {
                   Navigator.of(context).pop();
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => MedicamentosPage()),
+                    MaterialPageRoute(builder: (context) => MedicamentosPage(userToken: userToken)
+                  ),
                   );
                 },
               ),
