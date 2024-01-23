@@ -130,31 +130,40 @@ class _GetReceitasPageState extends State<GetReceitasPage> {
                       return AnimationConfiguration.staggeredList(
                         position: index,
                         child: FadeInAnimation(
-                          child: Container(
-                            margin: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                          child: Card(
+                            margin: const EdgeInsets.only(
+                                right: 15, left: 15, top: 25),
+                            elevation: 10,
                             child: ListTile(
                               title: Text(
                                   '${receita['Especialidade']} \n ${dateFormatter.convertToDateTime(receita['DataEmissao'])}'),
-                              trailing: ElevatedButton(
+                              trailing: Card(
+                                color: Provider.of<ThemeProvider>(context).isDarkMode 
+                                              ? const Color.fromARGB(255, 102, 102, 102)
+                                              : const Color.fromARGB(255, 255, 255, 255),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30)
+                                ),
+                                elevation: 10,
+                                child: IconButton(
                                   onPressed: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              ExibirPdfReceitaPage(
-                                                  nomeArquivo:
-                                                      '${receita['ID_Paciente']}_${receita['ID_Receita']}_receita.pdf')),
+                                        builder: (context) => ExibirPdfReceitaPage(
+                                            nomeArquivo:
+                                                '${receita['ID_Paciente']}_${receita['ID_Receita']}_receita.pdf'),
+                                      ),
                                     );
                                   },
-                                  child:
-                                      const Icon(Icons.remove_red_eye_sharp)),
+                                  icon:
+                                      const Icon(Icons.remove_red_eye_sharp),
+                                      iconSize: 30,
+                                      color: Provider.of<ThemeProvider>(context).isDarkMode 
+                                              ? const Color.fromARGB(255, 255, 255, 255)
+                                              : const Color.fromARGB(255, 119, 119, 119)
+                                ),
+                              ),
                               onTap: () async {
                                 print(dateFormatter.convertToDateTime(
                                     receita['DataConsulta']));

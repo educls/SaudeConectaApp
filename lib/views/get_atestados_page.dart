@@ -63,7 +63,7 @@ class _GetAtestadosPageState extends State<GetAtestadosPage> {
     Map<String, dynamic> fetchAtestadosForsetState =
         await getAtestados(userToken);
     _setAtestados(fetchAtestadosForsetState);
-    
+
     await Future.delayed(const Duration(milliseconds: 1000));
     _setLoading(true);
     Timer(const Duration(milliseconds: 100), () {
@@ -129,29 +129,39 @@ class _GetAtestadosPageState extends State<GetAtestadosPage> {
                       return AnimationConfiguration.staggeredList(
                         position: index,
                         child: FadeInAnimation(
-                            child: Container(
-                          margin: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.black,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                            child: Card(
+                          margin: const EdgeInsets.only(
+                              right: 15, left: 15, top: 25),
+                          elevation: 10,
                           child: ListTile(
                             title: Text(
                                 '${atestado['Especialidade']} \n ${dateFormatter.convertToDateTime(atestado['DataEmissao'])}'),
-                            trailing: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ExibirPdfPage(
-                                            nomeArquivo:
-                                                '${atestado['ID_Paciente']}_${atestado['ID_Atestado']}_atestado.pdf')),
-                                  );
-                                },
-                                child: const Icon(Icons.remove_red_eye_sharp)),
+                            trailing: Card(
+                              color: Provider.of<ThemeProvider>(context).isDarkMode 
+                                              ? const Color.fromARGB(255, 102, 102, 102)
+                                              : const Color.fromARGB(255, 255, 255, 255),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30)
+                              ),
+                              elevation: 10,
+                              child: IconButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ExibirPdfPage(
+                                              nomeArquivo:
+                                                  '${atestado['ID_Paciente']}_${atestado['ID_Atestado']}_atestado.pdf')),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.remove_red_eye_sharp),
+                                  iconSize: 30,
+                                  color: Provider.of<ThemeProvider>(context)
+                                          .isDarkMode
+                                      ? const Color.fromARGB(255, 255, 255, 255)
+                                      : const Color.fromARGB(
+                                          255, 119, 119, 119)),
+                            ),
                             onTap: () async {
                               print(dateFormatter
                                   .convertToDateTime(atestado['DataConsulta']));
