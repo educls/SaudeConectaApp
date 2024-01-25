@@ -82,6 +82,33 @@ class FetchApiPatient{
     return '';
   }
 
+  Future<String> fetchUpdateUser(update, String token) async {
+    String url = '${AppConstants.baseUrlApi}/usuarios/update_user';
+
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': token
+        },
+        body: jsonEncode(update),
+      );
+
+      if (response.statusCode == 201) {
+
+        return response.statusCode.toString();
+      } else {
+        print('Falha na requisição: ${response.statusCode}');
+        return response.statusCode.toString();
+      }
+    } catch (err) {
+      print('Erro na requisição: $err');
+    }
+    return '';
+  }
+
+
   Future<Map<String, dynamic>> fetchInfoPatient(String token) async {
     String url = '${AppConstants.baseUrlApi}/usuarios/get_info';
     Map<String, dynamic> retornoNull = {};

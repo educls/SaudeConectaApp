@@ -10,7 +10,8 @@ import '../controllers/patient_controller.dart';
 import '../utils/class/Theme.dart';
 
 class EditUserPage extends StatefulWidget {
-  EditUserPage({required this.userInfos, required this.userToken, Key? key}) : super(key: key);
+  EditUserPage({required this.userInfos, required this.userToken, Key? key})
+      : super(key: key);
   Map<String, dynamic> userInfos;
   final String userToken;
 
@@ -48,8 +49,7 @@ class _EditUserPageState extends State<EditUserPage> {
     print(userInfos);
   }
 
-  void _setInfos(){
-
+  void _setInfos() {
     _setLoading(true);
 
     _nome.text = userInfos['usuarioInfos']['Nome'];
@@ -60,7 +60,7 @@ class _EditUserPageState extends State<EditUserPage> {
     _status.text = userInfos['usuarioInfos']['Status'];
   }
 
-  void _setEndereco(userInfosEndereco) async{
+  void _setEndereco(userInfosEndereco) async {
     _estado.text = userInfosEndereco['usuarioInfosEndereco']['Estado'];
     _cidade.text = userInfosEndereco['usuarioInfosEndereco']['Cidade'];
     _bairro.text = userInfosEndereco['usuarioInfosEndereco']['Bairro'];
@@ -84,7 +84,6 @@ class _EditUserPageState extends State<EditUserPage> {
       _isLoading = isLoading;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -119,10 +118,10 @@ class _EditUserPageState extends State<EditUserPage> {
                 children: AnimationConfiguration.toStaggeredList(
                     childAnimationBuilder: (widget) => SlideAnimation(
                           horizontalOffset: 100.0,
-                            child: FadeInAnimation(
-                              child: widget,
-                            ),
+                          child: FadeInAnimation(
+                            child: widget,
                           ),
+                        ),
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(20),
@@ -321,23 +320,74 @@ class _EditUserPageState extends State<EditUserPage> {
                       ),
                       const SizedBox(height: 30),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          _setLoading(true);
 
+                          String response = await atualizaCadastro(
+                              userToken,
+                              _password.text,
+                              _telefone.text,
+                              _estado.text,
+                              _cidade.text,
+                              _bairro.text,
+                              _rua.text,
+                              _numero.text);
+                          await Future.delayed(const Duration(milliseconds: 600));
+                          print(response);
+                          if (response == '201') {
+                            // ignore: use_build_context_synchronously
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Cadastro Atualizado'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+
+                                        _setLoading(false);
+                                      },
+                                      child: const Text('Fechar'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            // ignore: use_build_context_synchronously
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Não foi possivel Atualizar Cadastro'),
+                                    actions: [
+                                    TextButton(
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+
+                                        _setLoading(false);
+                                      },
+                                      child: const Text('Fechar'),
+                                    ),
+                                  ],
+                                  );
+                                }
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromRGBO(75, 57, 239, 1),
-                          minimumSize: const Size(350, 50)
-                        ),
+                            backgroundColor:
+                                const Color.fromRGBO(75, 57, 239, 1),
+                            minimumSize: const Size(350, 50)),
                         child: const Text(
                           "Salvar",
-                          style: TextStyle(
-                            color: Colors.white
-                          ),
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                       const SizedBox(height: 40),
-                    ]
-                ),
+                    ]),
               ),
             ),
           ),

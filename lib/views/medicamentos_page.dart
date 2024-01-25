@@ -37,13 +37,25 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
     super.initState();
     userToken = widget.userToken;
 
-    _buscaMedicamentos(userToken);
+    reloadConsultas();
   }
 
   bool _isLoading = false;
   void _setLoading(bool isLoading) {
     setState(() {
       _isLoading = isLoading;
+    });
+  }
+
+  Future<void> reloadConsultas() async {
+    _setLoading(true);
+    _buscaMedicamentos(userToken);
+
+    await Future.delayed(const Duration(milliseconds: 1000));
+    
+    Timer(const Duration(milliseconds: 100), () {
+      _setMedicamentos(fetchMedicamentosForState);
+      _setLoading(false);
     });
   }
 
@@ -130,52 +142,58 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Expanded(
-                  child: Autocomplete<String>(
-                    optionsBuilder: (TextEditingValue textEditingValue) {
-                      final String query = textEditingValue.text.toLowerCase();
-                      if (query.isEmpty) {
-                        return const Iterable<String>.empty();
-                      }
-                      return searchMedicamentos.where((String item) {
-                        return item.toLowerCase().contains(query);
-                      });
-                    },
-                    onSelected: (String item) {
-                      setState(() {
-                        searchController.text = item;
-                      });
-                    },
-                    fieldViewBuilder: (BuildContext context,
-                        TextEditingController search,
-                        FocusNode focusNode,
-                        VoidCallback onFieldSubmitted) {
-                      return TextFormField(
-                        controller: search,
-                        focusNode: focusNode,
-                        onChanged: (String value) {
-                          if (value == '') {
-                            print("nenhuma busca");
-                            searchController.text = '';
-                          } else {
-                            _buscaAutoComplete(userToken, value);
-                            searchController.text = value;
-                          }
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Digite sua busca',
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              setState(() {
-                                search.text = '';
-                              });
-                            },
+                  child: Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 100
+                    ),
+                    child: Autocomplete<String>(
+                      optionsBuilder: (TextEditingValue textEditingValue) {
+                        final String query = textEditingValue.text.toLowerCase();
+                        if (query.isEmpty) {
+                          return const Iterable<String>.empty();
+                        }
+                        return searchMedicamentos.where((String item) {
+                          return item.toLowerCase().contains(query);
+                        });
+                      },
+                      onSelected: (String item) {
+                        setState(() {
+                          searchController.text = item;
+                        });
+                      },
+                      fieldViewBuilder: (BuildContext context,
+                          TextEditingController search,
+                          FocusNode focusNode,
+                          VoidCallback onFieldSubmitted) {
+                        return TextFormField(
+                          controller: search,
+                          focusNode: focusNode,
+                          onChanged: (String value) {
+                            if (value == '') {
+                              print("nenhuma busca");
+                              searchController.text = '';
+                            } else {
+                              _buscaAutoComplete(userToken, value);
+                              searchController.text = value;
+                            }
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Digite sua busca',
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                setState(() {
+                                  search.text = '';
+                                });
+                              },
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8.0),

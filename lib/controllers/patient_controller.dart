@@ -16,6 +16,16 @@ bool cadastraPatient(String nome, String email, String senha, String cpf, String
   return false;
 }
 
+Future<String> atualizaCadastro(String userToken, String senha, String telefone, String estado, String cidade, String bairro, String rua, String numero) async {
+
+  Endereco endereco = Endereco(estado: estado, cidade: cidade, bairro: bairro, rua: rua, numero: numero);
+  UpdateCadastroModel updateCadastro = UpdateCadastroModel(senha: senha, telefone: telefone, endereco: endereco);
+  
+  String response = await fetchApiPatient.fetchUpdateUser(updateCadastro, userToken);
+
+  return response;
+}
+
 bool patientSendCodeEmail(String email){
   EmailSendCode emailJson = EmailSendCode(email: email);
 

@@ -1,6 +1,9 @@
 
 
 
+import 'package:flutter_application_1/models/patient_model.dart';
+import 'package:flutter_application_1/models/update_medicamento_model.dart';
+
 import '../models/medicamento_model.dart';
 import '../services/medicamento_service.dart';
 import '../utils/date_formater.dart';
@@ -26,6 +29,14 @@ Future<String> cadastraMedicamento(String token, String nome, String formaFarmac
 Future<Map<String, dynamic>> getMedicamentos(String token) async {
 
   Map<String, dynamic> response = await fetchApiMedicamentos.fetchMedicamentos(token);
+
+  return response;
+}
+
+Future<String> updateMedicamento(String token, String estoque, String idMedicamento) async {
+  UpdateMedicamentoModel updateCadastroModel = UpdateMedicamentoModel(idMedicamento: idMedicamento, estoque: estoque);
+
+  String response = await fetchApiMedicamentos.fetchUpdateMedicamento(token, updateCadastroModel);
 
   return response;
 }

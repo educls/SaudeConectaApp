@@ -27,6 +27,26 @@ class PatientModel {
   }
 }
 
+class UpdateCadastroModel {
+  String senha;
+  String telefone;
+  Endereco endereco;
+
+  UpdateCadastroModel({
+    required this.senha,
+    required this.telefone,
+    required this.endereco,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'Senha': senha,
+      'Telefone': telefone,
+      'Endereco': endereco.toJson(),
+    };
+  }
+}
+
 class Endereco {
   String estado;
   String cidade;

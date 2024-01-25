@@ -60,6 +60,33 @@ class FetchApiMedicamentos {
     return retornoNull;
   }
 
+  Future<String> fetchUpdateMedicamento(String token, update) async {
+
+    String url = '${AppConstants.baseUrlApi}/medicamentos/update_medicamento';
+    String retornoNull = '';
+    try{
+      final response = await http.put(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': token
+        },
+        body: jsonEncode(update)
+      );
+      if (response.statusCode == 201) {
+        
+        return response.statusCode.toString();
+      } else {
+        print('Falha na requisição: ${response.statusCode}');
+        print(response.body);
+        return response.statusCode.toString();
+      }
+    }catch(err){
+      print('Erro na requisição: $err');
+    }
+    return retornoNull;
+  }
+
   Future<Map<String, dynamic>> fetchMedicamento(String token, String search) async {
 
     String url = '${AppConstants.baseUrlApi}/medicamentos/get_info_medicamento/$search';

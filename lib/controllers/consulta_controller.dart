@@ -9,7 +9,7 @@ FetchApiConsultas fetchApiConsultas = FetchApiConsultas();
 
 Future<Map<String, dynamic>> getConsultasPatient(String token) async{
 
-  Map<String, dynamic> response = await fetchApiConsultas.fetchConsultasForPatient(token);
+  Map<String, dynamic> response = await fetchApiConsultas.fetchConsultasForMedicos(token);
 
   return response;
 }

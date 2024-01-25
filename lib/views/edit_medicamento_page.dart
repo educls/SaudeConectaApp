@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/controllers/medicamento_controller.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
@@ -7,7 +8,8 @@ import '../utils/class/Theme.dart';
 import '../utils/date_formater.dart';
 
 class EditMedicamentoPage extends StatefulWidget {
-  EditMedicamentoPage({required this.userToken, super.key, required this.medicamento});
+  EditMedicamentoPage(
+      {required this.userToken, super.key, required this.medicamento});
   final String userToken;
   Map<String, dynamic> medicamento = {};
 
@@ -30,7 +32,7 @@ class _EditMedicamentoPageState extends State<EditMedicamentoPage> {
   DateFormatter dateFormatter = DateFormatter();
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     medicamento = widget.medicamento;
     userToken = widget.userToken;
@@ -95,8 +97,8 @@ class _EditMedicamentoPageState extends State<EditMedicamentoPage> {
       body: Stack(
         children: [
           (_isLoading == true)
-            ? const Center(child: CircularProgressIndicator())
-            : _editMedicamento()
+              ? const Center(child: CircularProgressIndicator())
+              : _editMedicamento()
         ],
       ),
     );
@@ -112,10 +114,10 @@ class _EditMedicamentoPageState extends State<EditMedicamentoPage> {
                 children: AnimationConfiguration.toStaggeredList(
                     childAnimationBuilder: (widget) => SlideAnimation(
                           horizontalOffset: 100.0,
-                            child: FadeInAnimation(
-                              child: widget,
-                            ),
+                          child: FadeInAnimation(
+                            child: widget,
                           ),
+                        ),
                     children: [
                       const SizedBox(height: 50),
                       SizedBox(
@@ -189,9 +191,7 @@ class _EditMedicamentoPageState extends State<EditMedicamentoPage> {
                       Padding(
                         padding: const EdgeInsets.all(20),
                         child: TextFormField(
-                          style: const TextStyle(
-                            fontSize: 20
-                          ),
+                          style: const TextStyle(fontSize: 20),
                           readOnly: true,
                           enabled: false,
                           controller: TextEditingController(
@@ -211,9 +211,7 @@ class _EditMedicamentoPageState extends State<EditMedicamentoPage> {
                       Padding(
                         padding: const EdgeInsets.all(20),
                         child: TextFormField(
-                          style: const TextStyle(
-                            fontSize: 20
-                          ),
+                          style: const TextStyle(fontSize: 20),
                           readOnly: true,
                           enabled: false,
                           controller: TextEditingController(
@@ -267,23 +265,68 @@ class _EditMedicamentoPageState extends State<EditMedicamentoPage> {
                       ),
                       const SizedBox(height: 30),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          _setLoading(true);
+                          String response =
+                              await updateMedicamento(userToken, _estoque.text, medicamento['ID_Medicamento'].toString());
 
+                          await Future.delayed(
+                              const Duration(milliseconds: 600));
+                          print(response);
+                          if (response == '201') {
+                            // ignore: use_build_context_synchronously
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Medicamento Atualizado'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+
+                                        _setLoading(false);
+                                      },
+                                      child: const Text('Fechar'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }else {
+                            // ignore: use_build_context_synchronously
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Não foi possivel Atualizar Medicamento'),
+                                    actions: [
+                                    TextButton(
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+
+                                        _setLoading(false);
+                                      },
+                                      child: const Text('Fechar'),
+                                    ),
+                                  ],
+                                  );
+                                }
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromRGBO(75, 57, 239, 1),
-                          minimumSize: const Size(350, 50)
-                        ),
+                            backgroundColor:
+                                const Color.fromRGBO(75, 57, 239, 1),
+                            minimumSize: const Size(350, 50)),
                         child: const Text(
                           "Cadastrar",
-                          style: TextStyle(
-                            color: Colors.white
-                          ),
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                       const SizedBox(height: 40),
-                    ]
-                ),
+                    ]),
               ),
             ),
           ),
@@ -291,5 +334,4 @@ class _EditMedicamentoPageState extends State<EditMedicamentoPage> {
       ],
     );
   }
-
 }

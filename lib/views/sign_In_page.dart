@@ -190,6 +190,7 @@ class _SignInPageState extends State<SignInPage> {
                         print(_isLoading);
 
                         if (userToken.length > 30) {
+                          _setLoading(false);
                           // ignore: use_build_context_synchronously
                           Navigator.push(
                             context,
