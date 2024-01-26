@@ -68,120 +68,147 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget _buildForm() {
     return SingleChildScrollView(
       child: AnimationLimiter(
-        child: Column(
-          children: AnimationConfiguration.toStaggeredList(
+          child: Column(
+        children: AnimationConfiguration.toStaggeredList(
             childAnimationBuilder: (widget) => SlideAnimation(
-              horizontalOffset: 50.0,
-              child: FadeInAnimation(child: widget),
-            ), 
+                  horizontalOffset: 50.0,
+                  child: FadeInAnimation(child: widget),
+                ),
             children: [
-              const SizedBox(height: 70),
+              const SizedBox(height: 130),
               SizedBox(
-                width: 50,
-                height: 30,
+                width: 260,
+                height: 50,
                 child: CachedNetworkImage(
                   imageUrl:
                       "https://raw.githubusercontent.com/educls/arquivos/main/logo_saude_conecta.png",
                   progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      CircularProgressIndicator(value: downloadProgress.progress),
+                      CircularProgressIndicator(
+                          value: downloadProgress.progress),
                   errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
               ),
               const SizedBox(
-                height: 30,
+                height: 20,
               ),
-              TextFormField(
-                autofocus: false,
-                keyboardType: TextInputType.visiblePassword,
-                controller: _user,
-                decoration: const InputDecoration(
-                  labelText: "Nome",
-                  labelStyle: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: SwitchListTile(
+                    title: const Text("Medico || Paciente"),
+                    value: _switchChangeStateAccount,
+                    onChanged: (bool value) {
+                      setState(() {
+                        _switchChangeStateAccount = value;
+                        print(_switchChangeStateAccount);
+                      });
+                    }),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: TextFormField(
+                  autofocus: false,
+                  keyboardType: TextInputType.visiblePassword,
+                  controller: _user,
+                  decoration: const InputDecoration(
+                    labelText: "Nome",
+                    labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  style: const TextStyle(
+                    fontSize: 20,
                   ),
                 ),
-                style: const TextStyle(
-                  fontSize: 20,
-                ),
               ),
-              const SizedBox(height: 10),
               Visibility(
                 visible: _switchChangeStateAccount,
                 child: Column(
                   children: <Widget>[
-                    TextFormField(
-                      autofocus: false,
-                      keyboardType: TextInputType.emailAddress,
-                      controller: _email,
-                      decoration: const InputDecoration(
-                        labelText: "Email",
-                        labelStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: TextFormField(
+                        autofocus: false,
+                        keyboardType: TextInputType.emailAddress,
+                        controller: _email,
+                        decoration: const InputDecoration(
+                          labelText: "Email",
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        style: const TextStyle(
+                          fontSize: 20,
                         ),
                       ),
-                      style: const TextStyle(
-                        fontSize: 20,
-                      ),
                     ),
-                    const SizedBox(height: 10),
                   ],
                 ),
               ),
-              TextFormField(
-                autofocus: false,
-                keyboardType: TextInputType.visiblePassword,
-                obscureText: true,
-                controller: _pass,
-                decoration: const InputDecoration(
-                  labelText: "Senha",
-                  labelStyle: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextFormField(
+                  autofocus: false,
+                  keyboardType: TextInputType.visiblePassword,
+                  obscureText: true,
+                  controller: _pass,
+                  decoration: const InputDecoration(
+                    labelText: "Senha",
+                    labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  style: const TextStyle(
+                    fontSize: 20,
                   ),
                 ),
-                style: const TextStyle(
-                  fontSize: 20,
-                ),
               ),
-              const SizedBox(height: 10),
-              TextFormField(
-                autofocus: false,
-                keyboardType: TextInputType.visiblePassword,
-                controller: _cpf,
-                decoration: const InputDecoration(
-                  labelText: "CPF",
-                  labelStyle: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextFormField(
+                  autofocus: false,
+                  keyboardType: TextInputType.visiblePassword,
+                  controller: _cpf,
+                  decoration: const InputDecoration(
+                    labelText: "CPF",
+                    labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  style: const TextStyle(
+                    fontSize: 20,
                   ),
                 ),
-                style: const TextStyle(
-                  fontSize: 20,
-                ),
-              ),
-              const SizedBox(
-                height: 50,
-              ),
-              SwitchListTile(
-                  title: const Text("Medico || Paciente"),
-                  value: _switchChangeStateAccount,
-                  onChanged: (bool value) {
-                    setState(() {
-                      _switchChangeStateAccount = value;
-                      print(_switchChangeStateAccount);
-                    });
-                  }),
-              const SizedBox(
-                height: 50,
               ),
               Visibility(
                 visible: _switchChangeStateAccount,
                 child: Column(
                   children: <Widget>[
-                    Container(
-                      width: 400,
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        autofocus: false,
+                        keyboardType: TextInputType.visiblePassword,
+                        controller: _tel,
+                        decoration: const InputDecoration(
+                          labelText: "Telefone",
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        style: const TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),                   
+                    const SizedBox(height: 50),
+                    const Text("Endereço"),
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -210,7 +237,6 @@ class _SignUpPageState extends State<SignUpPage> {
                               _city.text = adress['localidade'];
                               _district.text = adress['bairro'];
                               _street.text = adress['logradouro'];
-                              _tel.text = '0${adress['ddd']}';
 
                               _setPreenchido(false);
                             },
@@ -219,96 +245,92 @@ class _SignUpPageState extends State<SignUpPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 50),
-                    const Text("Contato"),
-                    TextFormField(
-                      autofocus: false,
-                      keyboardType: TextInputType.visiblePassword,
-                      controller: _tel,
-                      decoration: const InputDecoration(
-                        labelText: "Telefone",
-                        labelStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        controller: _estate,
+                        enabled: _isPreenchido,
+                        decoration: const InputDecoration(
+                          labelText: "Estado",
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      style: const TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    const SizedBox(height: 50),
-                    const Text("Endereço"),
-                    TextFormField(
-                      controller: _estate,
-                      enabled: _isPreenchido,
-                      decoration: const InputDecoration(
-                        labelText: "Estado",
-                        labelStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                        style: const TextStyle(
+                          fontSize: 20,
                         ),
-                      ),
-                      style: const TextStyle(
-                        fontSize: 20,
                       ),
                     ),
                     const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _city,
-                      enabled: _isPreenchido,
-                      decoration: const InputDecoration(
-                        labelText: "Cidade",
-                        labelStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        controller: _city,
+                        enabled: _isPreenchido,
+                        decoration: const InputDecoration(
+                          labelText: "Cidade",
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      style: const TextStyle(
-                        fontSize: 20,
+                        style: const TextStyle(
+                          fontSize: 20,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _district,
-                      enabled: _isPreenchido,
-                      decoration: const InputDecoration(
-                        labelText: "Bairro",
-                        labelStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        controller: _district,
+                        enabled: _isPreenchido,
+                        decoration: const InputDecoration(
+                          labelText: "Bairro",
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      style: const TextStyle(
-                        fontSize: 20,
+                        style: const TextStyle(
+                          fontSize: 20,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _street,
-                      enabled: _isPreenchido,
-                      decoration: const InputDecoration(
-                        labelText: "Rua",
-                        labelStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        controller: _street,
+                        enabled: _isPreenchido,
+                        decoration: const InputDecoration(
+                          labelText: "Rua",
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      style: const TextStyle(
-                        fontSize: 20,
+                        style: const TextStyle(
+                          fontSize: 20,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _number,
-                      decoration: const InputDecoration(
-                        labelText: "Numero",
-                        labelStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        controller: _number,
+                        decoration: const InputDecoration(
+                          labelText: "Numero",
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      style: const TextStyle(
-                        fontSize: 20,
+                        style: const TextStyle(
+                          fontSize: 20,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 50),
@@ -319,37 +341,42 @@ class _SignUpPageState extends State<SignUpPage> {
                 visible: !_switchChangeStateAccount,
                 child: Column(
                   children: <Widget>[
-                    TextFormField(
-                      controller: _crm,
-                      decoration: const InputDecoration(
-                        labelText: "CRM",
-                        labelStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        controller: _crm,
+                        decoration: const InputDecoration(
+                          labelText: "CRM",
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        style: const TextStyle(
+                          fontSize: 20,
                         ),
                       ),
-                      style: const TextStyle(
-                        fontSize: 20,
-                      ),
                     ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _speciality,
-                      decoration: const InputDecoration(
-                        labelText: "Especialidade",
-                        labelStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        controller: _speciality,
+                        decoration: const InputDecoration(
+                          labelText: "Especialidade",
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        style: const TextStyle(
+                          fontSize: 20,
                         ),
                       ),
-                      style: const TextStyle(
-                        fontSize: 20,
-                      ),
                     ),
+                    const SizedBox(height: 40)
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   _setLoading(true);
@@ -376,13 +403,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     }
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const SignInPage()),
+                      MaterialPageRoute(
+                          builder: (context) => const SignInPage()),
                     );
                   });
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(75, 57, 239, 1),
-                    minimumSize: const Size(70, 50)),
+                    minimumSize: const Size(350, 55)),
                 child: const Text(
                   "Cadastrar",
                   style: TextStyle(
@@ -394,10 +422,8 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(
                 height: 50,
               ),
-            ]
-          ),
-        )
-      ),
+            ]),
+      )),
     );
   }
 }
