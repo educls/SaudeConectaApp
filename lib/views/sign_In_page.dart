@@ -14,6 +14,8 @@ import 'sign_Up_page.dart';
 import 'package:wave/wave.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
 
@@ -34,6 +36,46 @@ class _SignInPageState extends State<SignInPage> {
   bool _isLoading = false;
   String tipo = '';
 
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String savedEmail = prefs.getString('email') ?? '';
+    String savedPassword = prefs.getString('password') ?? '';
+    String savedCrm = prefs.getString('crm') ?? '';
+    String savedPassPhysician = prefs.getString('passPhysician') ?? '';
+    bool typeAccount = prefs.getBool('typeAccount') ?? false;
+    bool themeDart = prefs.getBool('themeDark') ?? true;
+
+    setState(() {
+      _user.text = savedEmail;
+      _pass.text = savedPassword;
+
+      _crm.text = savedCrm;
+      _passPhy.text = savedPassPhysician;
+
+      _switchChangeTypeAccount = typeAccount;
+      setThemeDarkLight(themeDart);
+    });
+  }
+
+  Future<void> _saveCredentialsAndPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.setString('email', _user.text);
+    prefs.setString('password', _pass.text);
+
+    prefs.setString('crm', _crm.text);
+    prefs.setString('passPhysician', _passPhy.text);
+
+    prefs.setBool('typeAccount', _switchChangeTypeAccount);
+    prefs.setBool('themeDark', _switchTheme);
+  }
+
   void _setLoading(bool isLoading) {
     setState(() {
       _isLoading = isLoading;
@@ -44,6 +86,17 @@ class _SignInPageState extends State<SignInPage> {
     setState(() {
       _isObscure = isObscure;
     });
+  }
+
+  void setThemeDarkLight(bool theme) {
+    if(theme == true){
+      
+    }else{
+      setState(() {
+        _switchTheme = theme;
+      });
+      Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+    }
   }
 
   @override
@@ -176,6 +229,7 @@ class _SignInPageState extends State<SignInPage> {
                     onPressed: () async {
                       _setLoading(true);
                       print(_isLoading);
+                      _saveCredentialsAndPreferences();
 
                       Timer(const Duration(milliseconds: 1000), () async {
                         String username = _user.text;
@@ -189,7 +243,7 @@ class _SignInPageState extends State<SignInPage> {
                         _setLoading(!loadingEnd);
                         print(_isLoading);
 
-                        if (userToken.length > 30) {
+                        if (userToken.length > 20) {
                           _setLoading(false);
                           // ignore: use_build_context_synchronously
                           Navigator.push(
@@ -226,7 +280,6 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -256,8 +309,7 @@ class _SignInPageState extends State<SignInPage> {
                               setState(() {
                                 _switchTheme = value;
                               });
-                              Provider.of<ThemeProvider>(context, listen: false)
-                                  .toggleTheme();
+                              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
                             },
                           ),
                         ),
@@ -286,16 +338,16 @@ class _SignInPageState extends State<SignInPage> {
                 SizedBox(
                   width: 260,
                   height: 50,
-                child: CachedNetworkImage(
-                      imageUrl:
-                          "https://raw.githubusercontent.com/educls/arquivos/main/logo_saude_conecta.png",
-                      progressIndicatorBuilder:
-                          (context, url, downloadProgress) =>
-                              CircularProgressIndicator(
-                                  value: downloadProgress.progress),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                    ),
+                  child: CachedNetworkImage(
+                    imageUrl:
+                        "https://raw.githubusercontent.com/educls/arquivos/main/logo_saude_conecta.png",
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
@@ -362,6 +414,7 @@ class _SignInPageState extends State<SignInPage> {
                   onPressed: () async {
                     _setLoading(true);
                     print(_isLoading);
+                    _saveCredentialsAndPreferences();
 
                     Timer(const Duration(milliseconds: 1000), () async {
                       String username = _crm.text;
@@ -375,7 +428,7 @@ class _SignInPageState extends State<SignInPage> {
                       _setLoading(!loadingEnd);
                       print(_isLoading);
 
-                      if (userToken.length > 30) {
+                      if (userToken.length > 20) {
                         // ignore: use_build_context_synchronously
                         Navigator.push(
                           context,

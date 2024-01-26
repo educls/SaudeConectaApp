@@ -52,6 +52,7 @@ class FetchApiPhysician {
         return token.toString();
       } else {
         print('Falha na requisição: ${response.statusCode}');
+        return response.statusCode.toString();
       }
     } catch (err) {
       print('Erro na requisição: $err');
