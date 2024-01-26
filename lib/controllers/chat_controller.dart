@@ -4,9 +4,9 @@ import 'package:flutter_application_1/services/chat_service.dart';
 
 FetchApiMessages fetchApiMessages = FetchApiMessages();
 
-Future<Map<String, dynamic>> getMensagensConsulta(String userToken) async {
+Future<Map<String, dynamic>> getMensagensConsulta(String userToken, String idMensagem) async {
   
-  Map<String, dynamic> response = await fetchApiMessages.fetchMessages(userToken);
+  Map<String, dynamic> response = await fetchApiMessages.fetchMessages(userToken, idMensagem);
 
   return response;
 }

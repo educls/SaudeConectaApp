@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_application_1/utils/date_formater.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -44,19 +45,25 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
   late String tipo;
   late String nome;
 
+  DateFormatter dateFormatter = DateFormatter();
+
   late IO.Socket socket;
 
   @override
   void initState() {
     super.initState();
     userId = widget.userId;
+    print('UserId: $userId');
     receiverId = widget.receiverId;
+    print('ReceiverId: $receiverId');
     userToken = widget.userToken;
+    print('Token: $userToken');
     tipo = widget.tipo;
+    print('Tipo: $tipo');
     nome = widget.nome;
+    print('Nome: $nome');
     receiverName = widget.receiverName;
-    print('sender: ${userId}_$nome');
-    print('Receiver: ${receiverId}_$receiverName');
+    print('receiverNome: $receiverName');
 
     _loadConversas(userToken);
     initSocket();
@@ -86,12 +93,10 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
     socket.onError((err) => print(err));
 
     socket.on('getMessageEvent', (data) {
-      if (mounted) {
-        setState(() {
-          _messages.add(Message(data['text'].toString(),
-              data['sender'].toString(), data['receiver'].toString()));
-        });
-      }
+      setState(() {
+        _messages.add(Message(data['text'].toString(), data['sender'].toString(), data['receiver'].toString(), data['timestamp'].toString()));
+      });
+
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent + 100.0,
         duration: const Duration(milliseconds: 500),
@@ -102,29 +107,25 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
 
   void _sendMessage(String text, String receiver) {
     if (text.isNotEmpty && receiver.isNotEmpty) {
-      // Envia a mensagem para o servidor
       socket.emit('sendMessageEvent',
-          {'text': text, 'receiver': '${receiverId}_$receiverName'});
+          {'idChat': '$userId$receiverId', 'text': text, 'receiver': '${receiverId}_$receiverName'});
       _textController.clear();
     }
   }
 
   Future<void> _loadConversas(String userToken) async {
     _setLoading(true);
-    Map<String, dynamic> fetchMensagensSalvas = await getMensagensConsulta(userToken);
+    String idMensagem = '$userId$receiverId';
+    Map<String, dynamic> fetchMensagensSalvas =
+        await getMensagensConsulta(userToken, idMensagem);
 
     setState(() {
       mensagensSalvas = fetchMensagensSalvas;
+      print(mensagensSalvas);
     });
     await Future.delayed(const Duration(milliseconds: 500));
 
     _setLoading(false);
-    print("maxScrollExtent: ${_scrollController.position.maxScrollExtent}");
-    if (_scrollController.hasClients) {
-      final position = _scrollController.position.maxScrollExtent;
-      _scrollController.jumpTo(position);
-    }
-    print("maxScrollExtent: ${_scrollController.position.maxScrollExtent}");
   }
 
   @override
@@ -150,6 +151,7 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
+              socket.off('getMessageEvent');
               socket.disconnect();
               socket.onDisconnect((_) {
                 print('Desconectado do Socket.IO');
@@ -182,9 +184,8 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
               itemCount: mensagensSalvas['mensagens'].length + _messages.length,
               itemBuilder: (context, index) {
                 if (index < mensagensSalvas['mensagens'].length) {
-                  // Construa o item da mensagem salva
                   bool isMyMessage = mensagensSalvas['mensagens'][index]
-                          ['sender'] ==
+                          ['Sender'] ==
                       '${userId}_$nome';
 
                   return Padding(
@@ -212,13 +213,20 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
                                 Row(
                                   children: [
                                     const SizedBox(width: 5),
-                                    const SizedBox(height: 4.0),
                                     Text(
                                       mensagensSalvas['mensagens'][index]
-                                          ['text'],
+                                          ['Conteudo'],
                                     ),
                                     const SizedBox(width: 15),
-                                    const Icon(Icons.done),
+                                    Text(
+                                      mensagensSalvas['mensagens'][index]['Time_Message'],
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                    (isMyMessage)
+                                    ? const Icon(Icons.done)
+                                    : const Text('')
                                   ],
                                 ),
                               ],
@@ -229,7 +237,6 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
                     ),
                   );
                 } else {
-                  // Construa o item da mensagem normal
                   int normalIndex =
                       (index - mensagensSalvas['mensagens'].length).toInt();
                   bool isMyMessage = _messages[normalIndex].sender == nome;
@@ -259,12 +266,19 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
                                 Row(
                                   children: [
                                     const SizedBox(width: 5),
-                                    const SizedBox(height: 4.0),
                                     Text(
                                       _messages[normalIndex].text,
                                     ),
                                     const SizedBox(width: 15),
-                                    const Icon(Icons.done),
+                                    Text(
+                                      _messages[normalIndex].timestamp,
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                    (isMyMessage)
+                                      ? const Icon(Icons.done)
+                                      : const Text('')
                                   ],
                                 ),
                               ],
@@ -291,6 +305,10 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
                   decoration: const InputDecoration(
                     hintText: 'Digite sua mensagem...',
                   ),
+                  onTap: () {
+                    _scrollController
+                        .jumpTo(_scrollController.position.maxScrollExtent);
+                  },
                 ),
               ),
               IconButton(

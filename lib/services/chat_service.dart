@@ -7,9 +7,9 @@ AppConstants constants = AppConstants();
 
 class FetchApiMessages {
 
-  Future<Map<String, dynamic>> fetchMessages(String token) async {
+  Future<Map<String, dynamic>> fetchMessages(String token, String idMensagem) async {
 
-    String url = '${AppConstants.baseUrlApi}/mensagens';
+    String url = '${AppConstants.baseUrlApi}/mensagens/$idMensagem';
     Map<String, dynamic> retornoNull = {};
     try{
       final response = await http.get(

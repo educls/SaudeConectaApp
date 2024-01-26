@@ -628,9 +628,9 @@ class _HomePageState extends State<HomePage> {
               _setLoading(true);
               Navigator.of(context).pop();
               Timer(const Duration(milliseconds: 500), () {
-                Navigator.of(context).pushAndRemoveUntil(
+                Navigator.pushReplacement(
+                  context,
                   MaterialPageRoute(builder: (context) => const SignInPage()),
-                  (route) => false,
                 );
               });
             },

@@ -1,6 +1,8 @@
 
 
 
+import 'package:flutter/src/painting/text_style.dart';
+
 class DateFormatter {
   String formatToDDMMYYYY(DateTime dateTime) {
     String dateFormatted = "${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}";
@@ -30,6 +32,13 @@ class DateFormatter {
     String dataFormatada = formatter.formatToDDMMYYYY(data);
 
     return dataFormatada;
+  }
+
+  String getHourFromTimestamp(String timestamp) {
+    DateTime dateTime = DateTime.parse(timestamp);
+    String hourFormatted = "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
+
+    return hourFormatted;
   }
 }
 
