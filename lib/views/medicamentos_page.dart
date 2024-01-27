@@ -110,6 +110,11 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          )
+        ),
         surfaceTintColor: Colors.lightBlue,
         title: const Text('Medicamentos'),
         backgroundColor: Provider.of<ThemeProvider>(context).isDarkMode
@@ -216,6 +221,7 @@ class _MedicamentosPageState extends State<MedicamentosPage> {
               child: SmartRefresher(
                 enablePullDown: true,
                 header: WaterDropMaterialHeader(
+                  offset: -2,
                   color: Colors.white,
                   backgroundColor:
                       Provider.of<ThemeProvider>(context).isDarkMode

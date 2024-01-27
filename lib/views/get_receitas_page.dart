@@ -77,6 +77,11 @@ class _GetReceitasPageState extends State<GetReceitasPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          )
+        ),
         title: const Text(
           'Receitas',
           style: TextStyle(fontSize: 20),
@@ -114,6 +119,7 @@ class _GetReceitasPageState extends State<GetReceitasPage> {
               child: SmartRefresher(
                 enablePullDown: true,
                 header: WaterDropMaterialHeader(
+                  offset: -2,
                   color: Colors.white,
                   backgroundColor:
                       Provider.of<ThemeProvider>(context).isDarkMode

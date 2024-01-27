@@ -131,6 +131,11 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          )
+        ),
         title: const Text('Consultas Agendadas'),
         backgroundColor: Provider.of<ThemeProvider>(context).isDarkMode
             ? const Color.fromARGB(255, 35, 35, 36)
@@ -163,6 +168,7 @@ class _HomePageState extends State<HomePage> {
               child: SmartRefresher(
                 enablePullDown: true,
                 header: WaterDropMaterialHeader(
+                  offset: -2,
                   color: Colors.white,
                   backgroundColor:
                       Provider.of<ThemeProvider>(context).isDarkMode

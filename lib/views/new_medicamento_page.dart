@@ -75,6 +75,11 @@ class _NewMedicamentoPageState extends State<NewMedicamentoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          )
+        ),
         title: const Text('Novo Medicamento'),
         backgroundColor: Provider.of<ThemeProvider>(context).isDarkMode
             ? const Color.fromARGB(255, 35, 35, 36)

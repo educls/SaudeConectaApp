@@ -135,6 +135,11 @@ class _ScheduleConsultaState extends State<ScheduleConsulta> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          )
+        ),
         title: const Text(
           'Agendar Consulta',
           style: TextStyle(

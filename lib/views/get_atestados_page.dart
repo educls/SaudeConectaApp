@@ -76,6 +76,11 @@ class _GetAtestadosPageState extends State<GetAtestadosPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          )
+        ),
         title: const Text(
           'Atestados',
           style: TextStyle(fontSize: 20),
@@ -113,6 +118,7 @@ class _GetAtestadosPageState extends State<GetAtestadosPage> {
               child: SmartRefresher(
                 enablePullDown: true,
                 header: WaterDropMaterialHeader(
+                  offset: -2,
                   color: Colors.white,
                   backgroundColor:
                       Provider.of<ThemeProvider>(context).isDarkMode

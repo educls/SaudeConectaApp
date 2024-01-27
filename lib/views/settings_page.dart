@@ -21,12 +21,20 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          )
+        ),
         title: const Text(
         "Configurações",
         style: TextStyle(
           fontSize: 20
           ),
         ),
+        backgroundColor: Provider.of<ThemeProvider>(context).isDarkMode
+                                      ? const Color.fromARGB(255, 35, 35, 36)
+                                      : const Color.fromARGB(255, 54, 158, 255),
       ),
       body: Column(
         children: [
