@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
+import '../services/notification_service.dart';
 import '../utils/class/Theme.dart';
 import 'package:provider/provider.dart';
 
@@ -47,6 +48,13 @@ class _SettingsPageState extends State<SettingsPage> {
               });
               Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
             },
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              NotificationService.showNotification(title: 'titulo', body: 'body', payload: 'payload');
+            }, 
+            icon: const Icon(Icons.notification_add_outlined), 
+            label: const Text("notificação")
           ),
         ],
       ),
