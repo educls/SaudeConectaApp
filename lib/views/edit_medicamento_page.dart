@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/controllers/medicamento_controller.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
+import '../controllers/medicamento_controller.dart';
 import '../utils/class/Theme.dart';
 import '../utils/date_formater.dart';
 
@@ -90,10 +90,9 @@ class _EditMedicamentoPageState extends State<EditMedicamentoPage> {
     return Scaffold(
       appBar: AppBar(
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          )
-        ),
+            borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(20),
+        )),
         title: const Text('Editar Medicamento'),
         backgroundColor: Provider.of<ThemeProvider>(context).isDarkMode
             ? const Color.fromARGB(255, 35, 35, 36)
@@ -272,53 +271,73 @@ class _EditMedicamentoPageState extends State<EditMedicamentoPage> {
                       ElevatedButton(
                         onPressed: () async {
                           _setLoading(true);
-                          String response =
-                              await updateMedicamento(userToken, _estoque.text, medicamento['ID_Medicamento'].toString());
-
                           await Future.delayed(
-                              const Duration(milliseconds: 600));
-                          print(response);
-                          if (response == '201') {
+                              const Duration(milliseconds: 500));
+
+                          if (_estoque.text.isEmpty) {
+                            _setLoading(false);
                             // ignore: use_build_context_synchronously
                             showDialog(
                               context: context,
-                              barrierDismissible: false,
                               builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Medicamento Atualizado'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () async {
-                                        Navigator.of(context).pop();
-
-                                        _setLoading(false);
-                                      },
-                                      child: const Text('Fechar'),
-                                    ),
-                                  ],
+                                return const AlertDialog(
+                                  content: Text("Um dos campos está vazio"),
                                 );
                               },
                             );
-                          }else {
-                            // ignore: use_build_context_synchronously
-                            showDialog(
+                          } else {
+                            String response = await updateMedicamento(
+                                userToken,
+                                _estoque.text,
+                                medicamento['ID_Medicamento'].toString());
+
+                            await Future.delayed(
+                                const Duration(milliseconds: 600));
+                            print(response);
+
+                            if (response == '201') {
+                              // ignore: use_build_context_synchronously
+                              showDialog(
                                 context: context,
+                                barrierDismissible: false,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: const Text('Não foi possivel Atualizar Medicamento'),
+                                    title: const Text('Medicamento Atualizado'),
+                                    content: Text("Quantidade: ${_estoque.text}"),
                                     actions: [
-                                    TextButton(
-                                      onPressed: () async {
-                                        Navigator.of(context).pop();
+                                      TextButton(
+                                        onPressed: () async {
+                                          Navigator.of(context).pop();
 
-                                        _setLoading(false);
-                                      },
-                                      child: const Text('Fechar'),
-                                    ),
-                                  ],
+                                          _setLoading(false);
+                                        },
+                                        child: const Text('Fechar'),
+                                      ),
+                                    ],
                                   );
-                                }
-                            );
+                                },
+                              );
+                            } else {
+                              // ignore: use_build_context_synchronously
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text(
+                                          'Não foi possivel Atualizar Medicamento'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () async {
+                                            Navigator.of(context).pop();
+
+                                            _setLoading(false);
+                                          },
+                                          child: const Text('Fechar'),
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(

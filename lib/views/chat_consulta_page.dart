@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_application_1/utils/date_formater.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import '../controllers/chat_controller.dart';
 import '../models/message_model.dart';
 import '../utils/class/Theme.dart';
+import '../utils/date_formater.dart';
 
 class ChatConsultaPage extends StatefulWidget {
   const ChatConsultaPage(
@@ -105,17 +105,28 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
     });
   }
 
-  void _sendMessage(String text, String receiver) {
-    if (text.isNotEmpty && receiver.isNotEmpty) {
-      socket.emit('sendMessageEvent',
+  void _sendMessage(String text, String idUsuario, String idReceiver) {
+    if (text.isNotEmpty) {
+      if(tipo == 'paciente'){
+        socket.emit('sendMessageEvent',
           {'idChat': '$userId$receiverId', 'text': text, 'receiver': '${receiverId}_$receiverName'});
+      }else{
+        socket.emit('sendMessageEvent',
+          {'idChat': '$receiverId$userId', 'text': text, 'receiver': '${receiverId}_$receiverName'});
+      }
+      
       _textController.clear();
     }
   }
 
   Future<void> _loadConversas(String userToken) async {
     _setLoading(true);
-    String idMensagem = '$userId$receiverId';
+    String idMensagem;
+    if(tipo == 'paciente'){
+      idMensagem = '$userId$receiverId';
+    }else{
+      idMensagem = '$receiverId$userId';
+    }
     Map<String, dynamic> fetchMensagensSalvas =
         await getMensagensConsulta(userToken, idMensagem);
 
@@ -314,7 +325,7 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
               IconButton(
                 icon: const Icon(Icons.send),
                 onPressed: () {
-                  _sendMessage(_textController.text, receiverId.toString());
+                  _sendMessage(_textController.text, userId.toString(), receiverId.toString());
                 },
               ),
             ],

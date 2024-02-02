@@ -1,5 +1,6 @@
 
 
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -8,7 +9,7 @@ import '../utils/constants.dart';
 class FetchApiPatient{
   AppConstants constants = AppConstants();
 
-  void fetchPostPatient(patientModel) async {
+  Future<String> fetchPostPatient(patientModel) async {
     String url = '${AppConstants.baseUrlApi}/usuarios';
     print(patientModel);
 
@@ -23,16 +24,18 @@ class FetchApiPatient{
 
       if (response.statusCode == 201) {
         final responseData = json.decode(response.body);
-        print(responseData);
+        
+        return response.statusCode.toString();
       } else {
         print('Falha na requisição: ${response.statusCode}');
       }
     } catch (err) {
       print('Erro na requisição: $err');
     }
+    return '';
   }
 
-  void fetchSendCodeInEmail(email) async {
+  Future<String> fetchSendCodeInEmail(email) async {
     String url = '${AppConstants.baseUrlApi}/enviar-email-verificacao';
     try{
       final response = await http.post(
@@ -45,13 +48,15 @@ class FetchApiPatient{
 
     if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        print(responseData);
+        
+        return response.statusCode.toString();
       } else {
         print('Falha na requisição: ${response.statusCode}');
       }
     }catch(err){
       print('Erro na requisição: $err');
     }
+    return '';
   }
 
   Future<String> fetchLoginPatient(newLogin) async {
@@ -69,12 +74,15 @@ class FetchApiPatient{
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
 
+        print(response.body);
+
         final token = responseData['token'];
 
         print('Token recebido: $token');
         return token.toString();
       } else {
         print('Falha na requisição: ${response.statusCode}');
+        print(response.body);
       }
     } catch (err) {
       print('Erro na requisição: $err');

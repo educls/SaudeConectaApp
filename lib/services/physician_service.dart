@@ -8,7 +8,7 @@ AppConstants constants = AppConstants();
 
 class FetchApiPhysician {
 
-  void fetchPostPhysician(physician) async {
+  Future<String> fetchPostPhysician(physician) async {
     String url = '${AppConstants.baseUrlApi}/medicos';
 
     try {
@@ -22,13 +22,15 @@ class FetchApiPhysician {
 
       if (response.statusCode == 201) {
         final responseData = json.decode(response.body);
-        print(responseData);
+        
+        return response.statusCode.toString();
       } else {
         print('Falha na requisição: ${response.statusCode}');
       }
     } catch (e) {
       print('Erro na requisição: $e');
     }
+    return '';
   }
 
   Future<String> fetchLoginPhysician(newLogin) async {

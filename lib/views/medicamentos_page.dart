@@ -1,15 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/controllers/medicamento_controller.dart';
-import 'package:flutter_application_1/views/edit_medicamento_page.dart';
-import 'package:flutter_application_1/views/new_medicamento_page.dart';
+
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../controllers/medicamento_controller.dart';
 import '../utils/class/Theme.dart';
 import '../utils/date_formater.dart';
+import 'edit_medicamento_page.dart';
+import 'new_medicamento_page.dart';
 
 class MedicamentosPage extends StatefulWidget {
   const MedicamentosPage({required this.userToken, Key? key}) : super(key: key);

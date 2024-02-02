@@ -1,6 +1,8 @@
 
 
-import 'package:flutter_application_1/services/chat_service.dart';
+
+
+import '../services/chat_service.dart';
 
 FetchApiMessages fetchApiMessages = FetchApiMessages();
 

@@ -89,9 +89,8 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void setThemeDarkLight(bool theme) {
-    if(theme == true){
-      
-    }else{
+    if (theme == true) {
+    } else {
       setState(() {
         _switchTheme = theme;
       });
@@ -228,20 +227,30 @@ class _SignInPageState extends State<SignInPage> {
                   ElevatedButton(
                     onPressed: () async {
                       _setLoading(true);
-                      print(_isLoading);
                       _saveCredentialsAndPreferences();
+                      String username = _user.text;
+                      String password = _pass.text;
 
-                      Timer(const Duration(milliseconds: 1000), () async {
-                        String username = _user.text;
-                        String password = _pass.text;
+                      if (username.isEmpty || password.isEmpty) {
+                        await Future.delayed(const Duration(milliseconds: 500));
+                        _setLoading(false);
+                        // ignore: use_build_context_synchronously
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const AlertDialog(
+                              content: Text("Campos Vazios"),
+                            );
+                          },
+                        );
+                      } else {
+                        await Future.delayed(const Duration(milliseconds: 500));
 
                         String userToken =
                             await patientLogin(username, password);
                         tipo = 'paciente';
 
-                        bool loadingEnd = returFalse();
-                        _setLoading(!loadingEnd);
-                        print(_isLoading);
+                        print(userToken);
 
                         if (userToken.length > 20) {
                           _setLoading(false);
@@ -253,7 +262,7 @@ class _SignInPageState extends State<SignInPage> {
                                     HomePage(userToken: userToken, tipo: tipo)),
                           );
                         } else {
-                          _setLoading(loadingEnd);
+                          _setLoading(false);
                           // ignore: use_build_context_synchronously
                           showDialog(
                             context: context,
@@ -264,7 +273,7 @@ class _SignInPageState extends State<SignInPage> {
                             },
                           );
                         }
-                      });
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(75, 57, 239, 1),
@@ -287,7 +296,7 @@ class _SignInPageState extends State<SignInPage> {
                       );
                     },
                     child: const Text(
-                      'Não possue conta? Cadastre-se',
+                      'Não possui conta? Cadastre-se',
                       style: TextStyle(
                         color: Colors.blue,
                       ),
@@ -309,7 +318,8 @@ class _SignInPageState extends State<SignInPage> {
                               setState(() {
                                 _switchTheme = value;
                               });
-                              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+                              Provider.of<ThemeProvider>(context, listen: false)
+                                  .toggleTheme();
                             },
                           ),
                         ),
@@ -413,20 +423,30 @@ class _SignInPageState extends State<SignInPage> {
                 ElevatedButton(
                   onPressed: () async {
                     _setLoading(true);
-                    print(_isLoading);
                     _saveCredentialsAndPreferences();
+                    String username = _crm.text;
+                    String password = _passPhy.text;
 
-                    Timer(const Duration(milliseconds: 1000), () async {
-                      String username = _crm.text;
-                      String password = _passPhy.text;
+                    if (username.isEmpty || password.isEmpty) {
+                      await Future.delayed(const Duration(milliseconds: 500));
+                      _setLoading(false);
+                      // ignore: use_build_context_synchronously
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const AlertDialog(
+                            content: Text("Campos Vazios"),
+                          );
+                        },
+                      );
+                    } else {
+                      await Future.delayed(const Duration(milliseconds: 500));
 
                       String userToken =
                           await physicianLogin(username, password);
                       tipo = 'medico';
 
-                      bool loadingEnd = returFalse();
-                      _setLoading(!loadingEnd);
-                      print(_isLoading);
+                      print(userToken);
 
                       if (userToken.length > 20) {
                         // ignore: use_build_context_synchronously
@@ -437,7 +457,7 @@ class _SignInPageState extends State<SignInPage> {
                                   HomePage(userToken: userToken, tipo: tipo)),
                         );
                       } else {
-                        _setLoading(loadingEnd);
+                        _setLoading(false);
                         // ignore: use_build_context_synchronously
                         showDialog(
                           context: context,
@@ -448,7 +468,7 @@ class _SignInPageState extends State<SignInPage> {
                           },
                         );
                       }
-                    });
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(75, 57, 239, 1),

@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/views/chat_consulta_page.dart';
-import 'package:flutter_application_1/views/edit_user_page.dart';
+
 import 'package:provider/provider.dart';
+
 
 import '../utils/class/Theme.dart';
 import '../views/settings_page.dart';
@@ -15,6 +15,8 @@ import '../models/pop_up_model_atestado.dart';
 import '../utils/date_formater.dart';
 import '../utils/gera_string.dart';
 import 'atestado_page.dart';
+import 'chat_consulta_page.dart';
+import 'edit_user_page.dart';
 import 'get_atestados_page.dart';
 import 'get_receitas_page.dart';
 import 'medicamentos_page.dart';
@@ -156,6 +158,11 @@ class _HomePageState extends State<HomePage> {
               ? const Center(child: CircularProgressIndicator())
               : _buildForm(),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          
+        },
       ),
     );
   }
@@ -756,3 +763,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+
+
+
+
+
+

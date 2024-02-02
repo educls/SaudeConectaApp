@@ -4,14 +4,14 @@ import '../services/physician_service.dart';
 
 FetchApiPhysician fetchApiPhysician = FetchApiPhysician();
 
-bool cadastraPhysician(String nome, String senha, String cpf, String crm, String especialidade){
+Future<String> cadastraPhysician(String nome, String senha, String cpf, String crm, String especialidade) async {
 
   PhysicianModel medico = PhysicianModel(nome: nome, senha: senha, cpf: cpf, crm: crm, especialidade: especialidade);
   print(medico);
 
-  fetchApiPhysician.fetchPostPhysician(medico);
+  String response = await fetchApiPhysician.fetchPostPhysician(medico);
 
-  return false;
+  return response;
 }
 
 Future<String> physicianLogin(String crm, String password) async{

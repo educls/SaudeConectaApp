@@ -50,6 +50,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Stack(
         children: [
           Visibility(
@@ -75,7 +76,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: FadeInAnimation(child: widget),
                 ),
             children: [
-              const SizedBox(height: 130),
+              const SizedBox(height: 60),
               SizedBox(
                 width: 260,
                 height: 50,
@@ -204,7 +205,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           fontSize: 20,
                         ),
                       ),
-                    ),                   
+                    ),
                     const SizedBox(height: 50),
                     const Text("Endereço"),
                     Padding(
@@ -378,35 +379,65 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   _setLoading(true);
-                  Timer(const Duration(seconds: 1), () {
-                    if (_switchChangeStateAccount == true) {
-                      bool workedP = cadastraPatient(
-                          _user.text,
-                          _email.text,
-                          _pass.text,
-                          _cpf.text,
-                          _tel.text,
-                          _estate.text,
-                          _city.text,
-                          _district.text,
-                          _street.text,
-                          _number.text);
-                      print(workedP);
-                      _setLoading(workedP);
-                    } else {
-                      bool workedM = cadastraPhysician(_user.text, _pass.text,
-                          _cpf.text, _crm.text, _speciality.text);
-                      print(workedM);
-                      _setLoading(workedM);
-                    }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SignInPage()),
+                  await Future.delayed(
+                              const Duration(milliseconds: 1000));
+                  List<String> campos = [
+                    _user.text,
+                    _email.text,
+                    _pass.text,
+                    _cpf.text,
+                    _tel.text,
+                    _estate.text,
+                    _city.text,
+                    _district.text,
+                    _street.text,
+                    _number.text
+                  ];
+                  if (campos.any((campo) => campo.isEmpty)) {
+                    _setLoading(false);
+                    // ignore: use_build_context_synchronously
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const AlertDialog(
+                          content: Text("Um dos campos está vazio"),
+                        );
+                      },
                     );
-                  });
+                  } else {
+                    Timer(const Duration(seconds: 1), () async {
+                      if (_switchChangeStateAccount == true) {
+                        String response = await cadastraPatient(
+                            _user.text,
+                            _email.text,
+                            _pass.text,
+                            _cpf.text,
+                            _tel.text,
+                            _estate.text,
+                            _city.text,
+                            _district.text,
+                            _street.text,
+                            _number.text);
+                        print(response);
+                        _setLoading(false);
+                      } else {
+                        String response = await cadastraPhysician(_user.text, _pass.text,
+                            _cpf.text, _crm.text, _speciality.text);
+                        print(response);
+                        _setLoading(false);
+                      }
+                      // ignore: use_build_context_synchronously
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignInPage()),
+                      );
+                    });
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context).pop();
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(75, 57, 239, 1),

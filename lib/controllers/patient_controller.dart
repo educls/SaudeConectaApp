@@ -6,14 +6,14 @@ import '../services/patient_service.dart';
 
 FetchApiPatient fetchApiPatient = FetchApiPatient();
 
-bool cadastraPatient(String nome, String email, String senha, String cpf, String telefone, String estado, String cidade, String bairro, String rua, String numero) {
+Future<String> cadastraPatient(String nome, String email, String senha, String cpf, String telefone, String estado, String cidade, String bairro, String rua, String numero) async {
   Endereco endereco = Endereco(estado: estado, cidade: cidade, bairro: bairro, rua: rua, numero: numero);
 
   PatientModel paciente = PatientModel(nome: nome, email: email, senha: senha, cpf: cpf, telefone: telefone, endereco: endereco);
 
-  fetchApiPatient.fetchPostPatient(paciente);
+  String response = await fetchApiPatient.fetchPostPatient(paciente);
 
-  return false;
+  return response;
 }
 
 Future<String> atualizaCadastro(String userToken, String senha, String telefone, String estado, String cidade, String bairro, String rua, String numero) async {
@@ -26,12 +26,12 @@ Future<String> atualizaCadastro(String userToken, String senha, String telefone,
   return response;
 }
 
-bool patientSendCodeEmail(String email){
+Future<String> patientSendCodeEmail(String email) async{
   EmailSendCode emailJson = EmailSendCode(email: email);
 
-  fetchApiPatient.fetchSendCodeInEmail(emailJson);
+  String response = await fetchApiPatient.fetchSendCodeInEmail(emailJson);
 
-  return false;
+  return response;
 }
 
 Future<String> patientLogin(String email, String password) async{
