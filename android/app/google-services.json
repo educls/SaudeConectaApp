@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "161631036735",
+    "project_id": "saudeconecta-58247",
+    "storage_bucket": "saudeconecta-58247.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:161631036735:android:6eb3207d00476d17429f8a",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbSD5RTSGWKGpUMiLL-ML506nBbiCiTxg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
