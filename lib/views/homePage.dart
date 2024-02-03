@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/firebase_messaging_service.dart';
 import 'package:flutter_application_1/services/notification_service.dart';
 
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 import '../utils/class/Theme.dart';
@@ -56,6 +58,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    initilizeFirebaseMessaging();
+
     userToken = widget.userToken;
     tipo = widget.tipo;
     print(userInfos);
@@ -63,6 +67,10 @@ class _HomePageState extends State<HomePage> {
     reloadConsultas();
 
     print("tipo: $tipo");
+  }
+
+  initilizeFirebaseMessaging() async {
+    await Provider.of<FirebaseMessagingService>(context, listen: false).initialize();
   }
 
   Future<void> _buscarInfos(String userToken, String tipo) async {

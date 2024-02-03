@@ -36,7 +36,7 @@ class NotificationService {
         AndroidNotificationDetails('your channel id', 'your channel name',
             channelDescription: 'your channel description',
             importance: Importance.max,
-            priority: Priority.high,
+            priority: Priority.max,
             ticker: 'ticker');
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
