@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_application_1/controllers/notification_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -17,6 +18,7 @@ class ChatConsultaPage extends StatefulWidget {
       required this.userToken,
       required this.tipo,
       required this.nome,
+      required this.tokenFirebaseReceiver,
       Key? key})
       : super(key: key);
   final int userId;
@@ -25,6 +27,7 @@ class ChatConsultaPage extends StatefulWidget {
   final String userToken;
   final String tipo;
   final String nome;
+  final String tokenFirebaseReceiver;
 
   @override
   State<ChatConsultaPage> createState() => _ChatConsultaPageState();
@@ -44,6 +47,7 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
   late String userToken;
   late String tipo;
   late String nome;
+  late String tokenFirebaseReceiver;
 
   DateFormatter dateFormatter = DateFormatter();
 
@@ -53,6 +57,7 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
   void initState() {
     super.initState();
     userId = widget.userId;
+    tokenFirebaseReceiver = widget.tokenFirebaseReceiver;
     print('UserId: $userId');
     receiverId = widget.receiverId;
     print('ReceiverId: $receiverId');
@@ -77,7 +82,7 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
   }
 
   void initSocket() {
-    socket = IO.io('ws://192.168.1.23:3000', <String, dynamic>{
+    socket = IO.io('ws://192.168.86.11:3000', <String, dynamic>{
       'autoConnect': false,
       'transports': ['websocket'],
       'auth': {'token': userToken},
@@ -94,7 +99,11 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
 
     socket.on('getMessageEvent', (data) {
       setState(() {
-        _messages.add(Message(data['text'].toString(), data['sender'].toString(), data['receiver'].toString(), data['timestamp'].toString()));
+        _messages.add(Message(
+            data['text'].toString(),
+            data['sender'].toString(),
+            data['receiver'].toString(),
+            data['timestamp'].toString()));
       });
 
       _scrollController.animateTo(
@@ -107,14 +116,21 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
 
   void _sendMessage(String text, String idUsuario, String idReceiver) {
     if (text.isNotEmpty) {
-      if(tipo == 'paciente'){
-        socket.emit('sendMessageEvent',
-          {'idChat': '$userId$receiverId', 'text': text, 'receiver': '${receiverId}_$receiverName'});
-      }else{
-        socket.emit('sendMessageEvent',
-          {'idChat': '$receiverId$userId', 'text': text, 'receiver': '${receiverId}_$receiverName'});
+      if (tipo == 'paciente') {
+        socket.emit('sendMessageEvent', {
+          'idChat': '$userId$receiverId',
+          'text': text,
+          'receiver': '${receiverId}_$receiverName'
+        });
+      } else {
+        socket.emit('sendMessageEvent', {
+          'idChat': '$receiverId$userId',
+          'text': text,
+          'receiver': '${receiverId}_$receiverName'
+        });
       }
-      
+      sendNotification(tokenFirebaseReceiver, "Mensagem de $nome", text);
+
       _textController.clear();
     }
   }
@@ -122,9 +138,9 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
   Future<void> _loadConversas(String userToken) async {
     _setLoading(true);
     String idMensagem;
-    if(tipo == 'paciente'){
+    if (tipo == 'paciente') {
       idMensagem = '$userId$receiverId';
-    }else{
+    } else {
       idMensagem = '$receiverId$userId';
     }
     Map<String, dynamic> fetchMensagensSalvas =
@@ -230,14 +246,15 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
                                     ),
                                     const SizedBox(width: 15),
                                     Text(
-                                      mensagensSalvas['mensagens'][index]['Time_Message'],
+                                      mensagensSalvas['mensagens'][index]
+                                          ['Time_Message'],
                                       style: const TextStyle(
                                         fontSize: 10,
                                       ),
                                     ),
                                     (isMyMessage)
-                                    ? const Icon(Icons.done)
-                                    : const Text('')
+                                        ? const Icon(Icons.done)
+                                        : const Text('')
                                   ],
                                 ),
                               ],
@@ -288,8 +305,8 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
                                       ),
                                     ),
                                     (isMyMessage)
-                                      ? const Icon(Icons.done)
-                                      : const Text('')
+                                        ? const Icon(Icons.done)
+                                        : const Text('')
                                   ],
                                 ),
                               ],
@@ -325,7 +342,8 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
               IconButton(
                 icon: const Icon(Icons.send),
                 onPressed: () {
-                  _sendMessage(_textController.text, userId.toString(), receiverId.toString());
+                  _sendMessage(_textController.text, userId.toString(),
+                      receiverId.toString());
                 },
               ),
             ],

@@ -145,9 +145,7 @@ class _SignInPageState extends State<SignInPage> {
                           const Icon(Icons.error),
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: TextFormField(
@@ -312,8 +310,6 @@ class _SignInPageState extends State<SignInPage> {
                               start: 8.0, end: 8.0),
                           child: SwitchListTile(
                             value: _switchTheme,
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 162),
                             onChanged: (bool value) {
                               setState(() {
                                 _switchTheme = value;
@@ -359,9 +355,7 @@ class _SignInPageState extends State<SignInPage> {
                         const Icon(Icons.error),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: TextFormField(

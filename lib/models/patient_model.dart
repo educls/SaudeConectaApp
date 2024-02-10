@@ -80,8 +80,8 @@ class EmailSendCode {
     required this.email,
   });
 
-  Map<String, dynamic> toJson(){
-    return{
+  Map<String, dynamic> toJson() {
+    return {
       'email': email,
     };
   }
@@ -96,11 +96,10 @@ class LoginModel {
     required this.password,
   });
 
-  Map<String, dynamic> toJson(){
-    return{
+  Map<String, dynamic> toJson() {
+    return {
       'email': email,
       'password': password,
     };
   }
 }
-

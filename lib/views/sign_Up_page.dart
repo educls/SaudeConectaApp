@@ -31,6 +31,8 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _number = TextEditingController();
   final TextEditingController _crm = TextEditingController();
   final TextEditingController _speciality = TextEditingController();
+
+  late List<String> campos;
   bool _switchChangeStateAccount = true;
   bool _isLoading = false;
 
@@ -381,20 +383,30 @@ class _SignUpPageState extends State<SignUpPage> {
               ElevatedButton(
                 onPressed: () async {
                   _setLoading(true);
-                  await Future.delayed(
-                              const Duration(milliseconds: 1000));
-                  List<String> campos = [
-                    _user.text,
-                    _email.text,
-                    _pass.text,
-                    _cpf.text,
-                    _tel.text,
-                    _estate.text,
-                    _city.text,
-                    _district.text,
-                    _street.text,
-                    _number.text
-                  ];
+                  await Future.delayed(const Duration(milliseconds: 1000));
+                  if (_switchChangeStateAccount == true) {
+                    campos = [
+                      _user.text,
+                      _email.text,
+                      _pass.text,
+                      _cpf.text,
+                      _tel.text,
+                      _estate.text,
+                      _city.text,
+                      _district.text,
+                      _street.text,
+                      _number.text
+                    ];
+                  } else {
+                    campos = [
+                      _user.text,
+                      _pass.text,
+                      _cpf.text,
+                      _crm.text,
+                      _speciality.text,
+                    ];
+                  }
+
                   if (campos.any((campo) => campo.isEmpty)) {
                     _setLoading(false);
                     // ignore: use_build_context_synchronously
@@ -423,8 +435,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         print(response);
                         _setLoading(false);
                       } else {
-                        String response = await cadastraPhysician(_user.text, _pass.text,
-                            _cpf.text, _crm.text, _speciality.text);
+                        String response = await cadastraPhysician(_user.text,
+                            _pass.text, _cpf.text, _crm.text, _speciality.text);
                         print(response);
                         _setLoading(false);
                       }

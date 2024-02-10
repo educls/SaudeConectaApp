@@ -1,12 +1,9 @@
-
-
-
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../utils/constants.dart';
 
-class FetchApiPatient{
+class FetchApiPatient {
   AppConstants constants = AppConstants();
 
   Future<String> fetchPostPatient(patientModel) async {
@@ -24,7 +21,7 @@ class FetchApiPatient{
 
       if (response.statusCode == 201) {
         final responseData = json.decode(response.body);
-        
+
         return response.statusCode.toString();
       } else {
         print('Falha na requisição: ${response.statusCode}');
@@ -37,7 +34,7 @@ class FetchApiPatient{
 
   Future<String> fetchSendCodeInEmail(email) async {
     String url = '${AppConstants.baseUrlApi}/enviar-email-verificacao';
-    try{
+    try {
       final response = await http.post(
         Uri.parse(url),
         headers: <String, String>{
@@ -46,14 +43,14 @@ class FetchApiPatient{
         body: jsonEncode(email),
       );
 
-    if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         return response.statusCode.toString();
       } else {
         print('Falha na requisição: ${response.statusCode}');
       }
-    }catch(err){
+    } catch (err) {
       print('Erro na requisição: $err');
     }
     return '';
@@ -104,7 +101,6 @@ class FetchApiPatient{
       );
 
       if (response.statusCode == 201) {
-
         return response.statusCode.toString();
       } else {
         print('Falha na requisição: ${response.statusCode}');
@@ -116,27 +112,23 @@ class FetchApiPatient{
     return '';
   }
 
-
   Future<Map<String, dynamic>> fetchInfoPatient(String token) async {
     String url = '${AppConstants.baseUrlApi}/usuarios/get_info';
     Map<String, dynamic> retornoNull = {};
-    try{
-      final response = await http.get(
-        Uri.parse(url),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': token,
-        }
-      );
+    try {
+      final response = await http.get(Uri.parse(url), headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': token,
+      });
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         print(responseData);
-        
+
         return responseData;
       } else {
         print('Falha na requisição: ${response.statusCode}');
       }
-    }catch(err){
+    } catch (err) {
       print('Erro na requisição: $err');
     }
     return retornoNull;
@@ -145,26 +137,49 @@ class FetchApiPatient{
   Future<Map<String, dynamic>> fetchInfoPatientEndereco(String token) async {
     String url = '${AppConstants.baseUrlApi}/usuarios/get_info_endereco';
     Map<String, dynamic> retornoNull = {};
-    try{
-      final response = await http.get(
-        Uri.parse(url),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': token,
-        }
-      );
+    try {
+      final response = await http.get(Uri.parse(url), headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': token,
+      });
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         print(responseData);
-        
+
         return responseData;
       } else {
         print('Falha na requisição: ${response.statusCode}');
       }
-    }catch(err){
+    } catch (err) {
       print('Erro na requisição: $err');
     }
     return retornoNull;
   }
 
+  Future<Map<String, dynamic>> fetchSetTokenFirebaseInApi(
+      newRequest, userToken) async {
+    String url = '${AppConstants.baseUrlApi}/usuarios/set_token_firebase';
+    Map<String, dynamic> retornoNull = {};
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': userToken
+        },
+        body: jsonEncode(newRequest),
+      );
+
+      if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+
+        return responseData;
+      } else {
+        print('Falha na requisição: ${response.statusCode}');
+      }
+    } catch (err) {
+      print('Erro na requisição: $err');
+    }
+    return retornoNull;
+  }
 }

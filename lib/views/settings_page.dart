@@ -1,8 +1,7 @@
-
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
+
 import '../services/notification_service.dart';
 import '../utils/class/Theme.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +14,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-
   bool _switchTheme = true;
 
   @override
@@ -23,19 +21,16 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       appBar: AppBar(
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          )
-        ),
+            borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(20),
+        )),
         title: const Text(
-        "Configurações",
-        style: TextStyle(
-          fontSize: 20
-          ),
+          "Configurações",
+          style: TextStyle(fontSize: 20),
         ),
         backgroundColor: Provider.of<ThemeProvider>(context).isDarkMode
-                                      ? const Color.fromARGB(255, 35, 35, 36)
-                                      : const Color.fromARGB(255, 54, 158, 255),
+            ? const Color.fromARGB(255, 35, 35, 36)
+            : const Color.fromARGB(255, 54, 158, 255),
       ),
       body: Column(
         children: [
@@ -50,12 +45,12 @@ class _SettingsPageState extends State<SettingsPage> {
             },
           ),
           ElevatedButton.icon(
-            onPressed: () {
-              NotificationService.showNotification(title: 'titulo', body: 'body', payload: 'payload');
-            }, 
-            icon: const Icon(Icons.notification_add_outlined), 
-            label: const Text("notificação")
-          ),
+              onPressed: () {
+                NotificationService.showNotification(
+                    title: 'titulo', body: 'body', payload: 'payload');
+              },
+              icon: const Icon(Icons.notification_add_outlined),
+              label: const Text("notificação")),
         ],
       ),
     );

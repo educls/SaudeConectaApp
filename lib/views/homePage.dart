@@ -8,7 +8,7 @@ import 'package:flutter_application_1/services/notification_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
+import '../models/patient_model.dart';
 import '../utils/class/Theme.dart';
 import '../views/settings_page.dart';
 import '../controllers/consulta_controller.dart';
@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage> {
   late Map<String, dynamic> consultasThrow = {"a": ''};
   Map<String, String> dropdownOptionsEspecialidade = {};
   DateFormatter dateFormatter = DateFormatter();
+  late String tokenFirebase;
 
   Map<String, dynamic> fetchConsultasAgendadas = {};
 
@@ -63,14 +64,18 @@ class _HomePageState extends State<HomePage> {
     userToken = widget.userToken;
     tipo = widget.tipo;
     print(userInfos);
-    
+
     reloadConsultas();
 
     print("tipo: $tipo");
   }
 
   initilizeFirebaseMessaging() async {
-    await Provider.of<FirebaseMessagingService>(context, listen: false).initialize();
+    tokenFirebase =
+        await Provider.of<FirebaseMessagingService>(context, listen: false)
+            .initialize();
+    Map<String, dynamic> response =
+        await setTokenFirebaseInApi(userToken, tokenFirebase);
   }
 
   Future<void> _buscarInfos(String userToken, String tipo) async {
@@ -143,10 +148,9 @@ class _HomePageState extends State<HomePage> {
       key: _scaffoldKey,
       appBar: AppBar(
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          )
-        ),
+            borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(20),
+        )),
         title: const Text('Consultas Agendadas'),
         backgroundColor: Provider.of<ThemeProvider>(context).isDarkMode
             ? const Color.fromARGB(255, 35, 35, 36)
@@ -225,6 +229,7 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                       onTap: () async {
                                         if (tipo == 'paciente') {
+                                          print(consulta);
                                           // PopUpModelForPacient newSchedule = PopUpModelForPacient(
                                           //   idConsulta: consulta['ID_Consulta'].toString(),
                                           //   idPaciente: consulta['ID_Paciente'].toString(),
@@ -290,8 +295,22 @@ class _HomePageState extends State<HomePage> {
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  ChatConsultaPage(userId: consulta['ID_Paciente'], receiverId: consulta['ID_Medico'], userToken: userToken, tipo: tipo, nome: _name, receiverName: consulta['NomeMedico'])
-                                                          ),
+                                                                  ChatConsultaPage(
+                                                                    userId: consulta[
+                                                                        'ID_Paciente'],
+                                                                    receiverId:
+                                                                        consulta[
+                                                                            'ID_Medico'],
+                                                                    userToken:
+                                                                        userToken,
+                                                                    tipo: tipo,
+                                                                    nome: _name,
+                                                                    receiverName:
+                                                                        consulta[
+                                                                            'NomeMedico'],
+                                                                    tokenFirebaseReceiver:
+                                                                        '',
+                                                                  )),
                                                         );
                                                       },
                                                       child: const Icon(
@@ -303,6 +322,7 @@ class _HomePageState extends State<HomePage> {
                                             },
                                           );
                                         } else {
+                                          print(consulta);
                                           PopUpModelForPhysician newAtestado =
                                               PopUpModelForPhysician(
                                                   idConsulta:
@@ -472,10 +492,23 @@ class _HomePageState extends State<HomePage> {
                                                             'mensagem id: ${consulta['ID_Medico']}');
                                                         Navigator.push(
                                                           context,
-                                                          MaterialPageRoute(  
-                                                              builder: (context) =>
-                                                                  ChatConsultaPage(userId: consulta['ID_Medico'], receiverId: consulta['ID_Paciente'], userToken: userToken, tipo: tipo, nome: _name, receiverName: consulta['NomePaciente'])
-                                                          ),
+                                                          MaterialPageRoute(
+                                                              builder: (context) => ChatConsultaPage(
+                                                                  userId: consulta[
+                                                                      'ID_Medico'],
+                                                                  receiverId:
+                                                                      consulta[
+                                                                          'ID_Paciente'],
+                                                                  userToken:
+                                                                      userToken,
+                                                                  tipo: tipo,
+                                                                  nome: _name,
+                                                                  receiverName:
+                                                                      consulta[
+                                                                          'NomePaciente'],
+                                                                  tokenFirebaseReceiver:
+                                                                      consulta[
+                                                                          'TokenFireBase'])),
                                                         );
                                                       },
                                                       child: const Icon(
@@ -590,7 +623,8 @@ class _HomePageState extends State<HomePage> {
                         dropdownOptionsEspecialidade:
                             dropdownOptionsEspecialidade,
                         userToken: userToken,
-                        medInfos: medicos)),
+                        medInfos: medicos,
+                        tokenFirebase: tokenFirebase)),
               );
             },
           ),
@@ -767,10 +801,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-
-
-
-
-
-

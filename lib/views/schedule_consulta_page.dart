@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_application_1/controllers/notification_controller.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
@@ -17,12 +18,14 @@ class ScheduleConsulta extends StatefulWidget {
       {required this.dropdownOptionsEspecialidade,
       required this.userToken,
       Key? key,
-      required this.medInfos})
+      required this.medInfos,
+      required this.tokenFirebase})
       : super(key: key);
 
   final Map<String, dynamic> dropdownOptionsEspecialidade;
   final Map<String, dynamic> medInfos;
   final String userToken;
+  final String tokenFirebase;
   @override
   _ScheduleConsultaState createState() => _ScheduleConsultaState();
 }
@@ -35,6 +38,7 @@ class _ScheduleConsultaState extends State<ScheduleConsulta> {
 
   DateFormatter dateFormatter = DateFormatter();
   late String userToken;
+  late String tokenFirebase;
   final ValueNotifier<String> _dropValue = ValueNotifier<String>('');
   final ValueNotifier<String> dropValueDoctor = ValueNotifier<String>('');
   final ValueNotifier<String> dropValueHours = ValueNotifier<String>('');
@@ -70,6 +74,7 @@ class _ScheduleConsultaState extends State<ScheduleConsulta> {
   void initState() {
     super.initState();
     userToken = widget.userToken;
+    tokenFirebase = widget.tokenFirebase;
     medInfos = widget.medInfos;
     dropdownOptionsEspecialidade = widget.dropdownOptionsEspecialidade;
     dropdownOptionsHoursBackup = Map.from(dropdownOptionsHours);
@@ -136,10 +141,9 @@ class _ScheduleConsultaState extends State<ScheduleConsulta> {
     return Scaffold(
       appBar: AppBar(
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          )
-        ),
+            borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(20),
+        )),
         title: const Text(
           'Agendar Consulta',
           style: TextStyle(
@@ -370,6 +374,8 @@ class _ScheduleConsultaState extends State<ScheduleConsulta> {
 
                       Timer(const Duration(milliseconds: 200), () async {
                         if (response) {
+                          sendNotification(tokenFirebase, 'Consulta Agendada',
+                              '$especialidade \nData: $data \nHora: $hora');
                           // ignore: use_build_context_synchronously
                           showDialog(
                             context: context,
