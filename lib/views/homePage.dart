@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/controllers/notification_controller.dart';
 import 'package:flutter_application_1/services/firebase_messaging_service.dart';
 import 'package:flutter_application_1/services/notification_service.dart';
 
@@ -65,8 +66,6 @@ class _HomePageState extends State<HomePage> {
     tipo = widget.tipo;
     print(userInfos);
 
-    reloadConsultas();
-
     print("tipo: $tipo");
   }
 
@@ -74,8 +73,16 @@ class _HomePageState extends State<HomePage> {
     tokenFirebase =
         await Provider.of<FirebaseMessagingService>(context, listen: false)
             .initialize();
-    Map<String, dynamic> response =
-        await setTokenFirebaseInApi(userToken, tokenFirebase);
+    if (tipo == 'paciente') {
+      Map<String, dynamic> response =
+          await setTokenFirebaseInApi(userToken, tokenFirebase);
+      print("PACIENTEEEE");
+    } else {
+      Map<String, dynamic> response =
+          await setTokenFirebasePhysician(userToken, tokenFirebase);
+      print("MEDICOOO");
+    }
+    reloadConsultas();
   }
 
   Future<void> _buscarInfos(String userToken, String tipo) async {
@@ -290,7 +297,7 @@ class _HomePageState extends State<HomePage> {
                                                     child: FloatingActionButton(
                                                       onPressed: () {
                                                         print(
-                                                            'mensagem id: ${consulta['ID_Medico']}');
+                                                            '$consulta OPAAAAAAAAAAAAAA');
                                                         Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
@@ -308,8 +315,12 @@ class _HomePageState extends State<HomePage> {
                                                                     receiverName:
                                                                         consulta[
                                                                             'NomeMedico'],
+                                                                    consultaId:
+                                                                        consulta[
+                                                                            'ID_Consulta'],
                                                                     tokenFirebaseReceiver:
-                                                                        '',
+                                                                        consulta[
+                                                                            'TokenFireBase'],
                                                                   )),
                                                         );
                                                       },
@@ -376,9 +387,12 @@ class _HomePageState extends State<HomePage> {
                                                                         .push(
                                                                       context,
                                                                       MaterialPageRoute(
-                                                                          builder: (context) => AtestadoPage(
-                                                                              newAtestado: newAtestado,
-                                                                              userToken: userToken)),
+                                                                          builder: (context) =>
+                                                                              AtestadoPage(
+                                                                                newAtestado: newAtestado,
+                                                                                userToken: userToken,
+                                                                                tokenFirebase: consulta['TokenFireBase'],
+                                                                              )),
                                                                     );
                                                                   },
                                                                   child: const Text(
@@ -397,7 +411,8 @@ class _HomePageState extends State<HomePage> {
                                                                       MaterialPageRoute(
                                                                           builder: (context) => ReceitaMedicaPage(
                                                                               newAtestado: newAtestado,
-                                                                              userToken: userToken)),
+                                                                              userToken: userToken,
+                                                                              tokenFirebase: consulta['TokenFireBase'])),
                                                                     );
                                                                   },
                                                                   child: const Text(
@@ -453,11 +468,15 @@ class _HomePageState extends State<HomePage> {
                                                                                 consulta['ID_Consulta'].toString(),
                                                                                 estado,
                                                                                 userToken);
+                                                                            sendNotification(
+                                                                                consulta['TokenFireBase'],
+                                                                                "Consulta Finalizada",
+                                                                                '${consulta['Especialidade']} \nData: ${dateFormatter.convertToDateTime(consulta['DataConsulta'])} Hora: ${consulta['HoraConsulta']}');
+
+                                                                            reloadConsultas();
 
                                                                             // ignore: use_build_context_synchronously
                                                                             Navigator.of(context).pop();
-
-                                                                            reloadConsultas();
                                                                           },
                                                                           child:
                                                                               const Text('Sim'),
@@ -506,6 +525,9 @@ class _HomePageState extends State<HomePage> {
                                                                   receiverName:
                                                                       consulta[
                                                                           'NomePaciente'],
+                                                                  consultaId:
+                                                                      consulta[
+                                                                          'ID_Consulta'],
                                                                   tokenFirebaseReceiver:
                                                                       consulta[
                                                                           'TokenFireBase'])),
@@ -604,27 +626,13 @@ class _HomePageState extends State<HomePage> {
           ListTile(
             title: const Text('Agendar Consulta'),
             onTap: () async {
-              Map<String, dynamic> medicos = await getPhysicians();
-
-              for (var medico in medicos['medicoInfos']) {
-                if (!dropdownOptionsEspecialidade
-                    .containsValue(medico['Especialidade'])) {
-                  dropdownOptionsEspecialidade[generator.getRandomString(5)] =
-                      '${medico['Especialidade']}';
-                }
-              }
-
               Navigator.of(context).pop();
               // ignore: use_build_context_synchronously
               Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => ScheduleConsulta(
-                        dropdownOptionsEspecialidade:
-                            dropdownOptionsEspecialidade,
-                        userToken: userToken,
-                        medInfos: medicos,
-                        tokenFirebase: tokenFirebase)),
+                        userToken: userToken, tokenFirebase: tokenFirebase)),
               );
             },
           ),

@@ -89,8 +89,20 @@ Future<Map<String, dynamic>> setTokenFirebaseInApi(
     String token, String tokenFirebase) async {
   SetTokenFirebaseModel newRequest =
       SetTokenFirebaseModel(tokenFirebase: tokenFirebase);
+
   Map<String, dynamic> response =
       await fetchApiPatient.fetchSetTokenFirebaseInApi(newRequest, token);
+
+  return response;
+}
+
+Future<Map<String, dynamic>> setTokenFirebasePhysician(
+    String token, String tokenFirebase) async {
+  SetTokenFirebaseModel newRequest =
+      SetTokenFirebaseModel(tokenFirebase: tokenFirebase);
+
+  Map<String, dynamic> response =
+      await fetchApiPatient.fetchSetTokenFirebasePhysician(newRequest, token);
 
   return response;
 }

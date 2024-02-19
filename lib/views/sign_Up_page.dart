@@ -37,9 +37,11 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _isLoading = false;
 
   void _setLoading(bool isLoading) {
-    setState(() {
-      _isLoading = isLoading;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = isLoading;
+      });
+    }
   }
 
   bool _isPreenchido = true;
@@ -440,15 +442,13 @@ class _SignUpPageState extends State<SignUpPage> {
                         print(response);
                         _setLoading(false);
                       }
-                      // ignore: use_build_context_synchronously
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SignInPage()),
-                      );
                     });
                     // ignore: use_build_context_synchronously
-                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignInPage()),
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(

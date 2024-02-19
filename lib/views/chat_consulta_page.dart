@@ -14,6 +14,7 @@ class ChatConsultaPage extends StatefulWidget {
   const ChatConsultaPage(
       {required this.userId,
       required this.receiverId,
+      required this.consultaId,
       required this.receiverName,
       required this.userToken,
       required this.tipo,
@@ -23,6 +24,7 @@ class ChatConsultaPage extends StatefulWidget {
       : super(key: key);
   final int userId;
   final int receiverId;
+  final int consultaId;
   final String receiverName;
   final String userToken;
   final String tipo;
@@ -43,6 +45,7 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
 
   late int userId;
   late int receiverId;
+  late int consultaId;
   late String receiverName;
   late String userToken;
   late String tipo;
@@ -61,6 +64,8 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
     print('UserId: $userId');
     receiverId = widget.receiverId;
     print('ReceiverId: $receiverId');
+    consultaId = widget.consultaId;
+    print("ConsultaId: $consultaId");
     userToken = widget.userToken;
     print('Token: $userToken');
     tipo = widget.tipo;
@@ -82,7 +87,7 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
   }
 
   void initSocket() {
-    socket = IO.io('ws://192.168.86.11:3000', <String, dynamic>{
+    socket = IO.io('ws://192.168.86.7:3000', <String, dynamic>{
       'autoConnect': false,
       'transports': ['websocket'],
       'auth': {'token': userToken},
@@ -118,13 +123,13 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
     if (text.isNotEmpty) {
       if (tipo == 'paciente') {
         socket.emit('sendMessageEvent', {
-          'idChat': '$userId$receiverId',
+          'idChat': '$userId$receiverId$consultaId',
           'text': text,
           'receiver': '${receiverId}_$receiverName'
         });
       } else {
         socket.emit('sendMessageEvent', {
-          'idChat': '$receiverId$userId',
+          'idChat': '$receiverId$userId$consultaId',
           'text': text,
           'receiver': '${receiverId}_$receiverName'
         });
@@ -139,9 +144,9 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
     _setLoading(true);
     String idMensagem;
     if (tipo == 'paciente') {
-      idMensagem = '$userId$receiverId';
+      idMensagem = '$userId$receiverId$consultaId';
     } else {
-      idMensagem = '$receiverId$userId';
+      idMensagem = '$receiverId$userId$consultaId';
     }
     Map<String, dynamic> fetchMensagensSalvas =
         await getMensagensConsulta(userToken, idMensagem);
@@ -241,8 +246,20 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
                                   children: [
                                     const SizedBox(width: 5),
                                     Text(
-                                      mensagensSalvas['mensagens'][index]
-                                          ['Conteudo'],
+                                      (mensagensSalvas['mensagens'][index]
+                                                      ['Conteudo']
+                                                  .length >
+                                              35)
+                                          ? mensagensSalvas['mensagens'][index]
+                                                  ['Conteudo']
+                                              .replaceAllMapped(
+                                              RegExp('.{1,35}'),
+                                              (Match match) =>
+                                                  '${match.group(0)}\n',
+                                            )
+                                          : mensagensSalvas['mensagens'][index]
+                                              ['Conteudo'],
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                     const SizedBox(width: 15),
                                     Text(
@@ -294,9 +311,16 @@ class _ChatConsultaPageState extends State<ChatConsultaPage> {
                                 Row(
                                   children: [
                                     const SizedBox(width: 5),
-                                    Text(
-                                      _messages[normalIndex].text,
-                                    ),
+                                    Text((_messages[normalIndex].text.length >
+                                            35)
+                                        ? _messages[normalIndex]
+                                            .text
+                                            .replaceAllMapped(
+                                              RegExp('.{1,35}'),
+                                              (Match match) =>
+                                                  '${match.group(0)}\n',
+                                            )
+                                        : _messages[normalIndex].text),
                                     const SizedBox(width: 15),
                                     Text(
                                       _messages[normalIndex].timestamp,

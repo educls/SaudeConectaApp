@@ -182,4 +182,31 @@ class FetchApiPatient {
     }
     return retornoNull;
   }
+
+  Future<Map<String, dynamic>> fetchSetTokenFirebasePhysician(
+      newRequest, userToken) async {
+    String url = '${AppConstants.baseUrlApi}/medicos/set_token_firebase';
+    Map<String, dynamic> retornoNull = {};
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': userToken
+        },
+        body: jsonEncode(newRequest),
+      );
+
+      if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+
+        return responseData;
+      } else {
+        print('Falha na requisição: ${response.statusCode}');
+      }
+    } catch (err) {
+      print('Erro na requisição: $err');
+    }
+    return retornoNull;
+  }
 }

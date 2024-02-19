@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../controllers/consulta_controller.dart';
 import '../controllers/horario_controller.dart';
+import '../controllers/physician_controller.dart';
 import '../utils/class/Theme.dart';
 import '../utils/date_formater.dart';
 import '../utils/gera_string.dart';
@@ -15,15 +16,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class ScheduleConsulta extends StatefulWidget {
   const ScheduleConsulta(
-      {required this.dropdownOptionsEspecialidade,
-      required this.userToken,
-      Key? key,
-      required this.medInfos,
-      required this.tokenFirebase})
+      {required this.userToken, Key? key, required this.tokenFirebase})
       : super(key: key);
 
-  final Map<String, dynamic> dropdownOptionsEspecialidade;
-  final Map<String, dynamic> medInfos;
   final String userToken;
   final String tokenFirebase;
   @override
@@ -43,11 +38,12 @@ class _ScheduleConsultaState extends State<ScheduleConsulta> {
   final ValueNotifier<String> dropValueDoctor = ValueNotifier<String>('');
   final ValueNotifier<String> dropValueHours = ValueNotifier<String>('');
 
-  late Map<String, dynamic> medInfos;
+  late Map<String, dynamic> medInfos = {};
+  Map<String, dynamic> dropdownOptionsEspecialidade = {};
+
   Map<String, String> dropdownOptionsDoutor = {};
   Map<String, dynamic> returnHorarios = {};
 
-  Map<String, dynamic> dropdownOptionsEspecialidade = {};
   Map<String, String> dropdownOptionsHoursBackup = {};
   Map<String, String> dropdownOptionsHours = {
     '07:30:00': '07:30',
@@ -73,13 +69,26 @@ class _ScheduleConsultaState extends State<ScheduleConsulta> {
   @override
   void initState() {
     super.initState();
+    getPhysiciansInfos();
     userToken = widget.userToken;
     tokenFirebase = widget.tokenFirebase;
-    medInfos = widget.medInfos;
-    dropdownOptionsEspecialidade = widget.dropdownOptionsEspecialidade;
     dropdownOptionsHoursBackup = Map.from(dropdownOptionsHours);
 
     print(medInfos);
+  }
+
+  void getPhysiciansInfos() async {
+    medInfos = await getPhysicians();
+
+    setState(() {
+      for (var medico in medInfos['medicoInfos']) {
+        if (!dropdownOptionsEspecialidade
+            .containsValue(medico['Especialidade'])) {
+          dropdownOptionsEspecialidade[generator.getRandomString(5)] =
+              '${medico['Especialidade']}';
+        }
+      }
+    });
   }
 
   void _setNomeDropDown(choice) {
@@ -372,10 +381,19 @@ class _ScheduleConsultaState extends State<ScheduleConsulta> {
                       bool response = await cadastraConsulta(idMedico,
                           especialidade, dataFormatDB, hora, userToken);
 
+                      for (var medicoInfo in medInfos['medicoInfos']) {
+                        print(medicoInfo);
+                        if (medicoInfo['ID_Medico'].toString() == idMedico) {
+                          sendNotification(
+                              medicoInfo['TokenFireBase'],
+                              'Nova Consulta Atribuida',
+                              'Data: $data Hora: $hora');
+                        }
+                      }
                       Timer(const Duration(milliseconds: 200), () async {
                         if (response) {
                           sendNotification(tokenFirebase, 'Consulta Agendada',
-                              '$especialidade \nData: $data \nHora: $hora');
+                              '$especialidade \nData: $data Hora: $hora');
                           // ignore: use_build_context_synchronously
                           showDialog(
                             context: context,

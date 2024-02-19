@@ -24,7 +24,7 @@ class _ExibirPdfPageState extends State<ExibirPdfPage> {
     buscarPdfFromFtp(nomeArquivo);
   }
 
-  void _setCaminho(atestados){
+  void _setCaminho(atestados) {
     setState(() {
       _caminhoDoArquivo = atestados;
     });
@@ -33,30 +33,28 @@ class _ExibirPdfPageState extends State<ExibirPdfPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Vizualizador Atestado'),
-      ),
-      body: 
-        _caminhoDoArquivo.isEmpty
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
-        : PDFView(
-            filePath: _caminhoDoArquivo,
-          )
-    );
+        appBar: AppBar(
+          title: const Text('Vizualizador Atestado'),
+        ),
+        body: _caminhoDoArquivo.isEmpty
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : PDFView(
+                filePath: _caminhoDoArquivo,
+              ));
   }
-
 
   void buscarPdfFromFtp(nomeArquivo) async {
     final FTPConnect _ftpConnect = FTPConnect(
-      "192.168.1.23",
+      "192.168.86.11",
       user: "api",
       pass: "1234",
       showLog: true,
     );
 
-    Future<String> fileMock({fileName = 'FlutterTest.txt', content = ''}) async {
+    Future<String> fileMock(
+        {fileName = 'FlutterTest.txt', content = ''}) async {
       final Directory directory = await getTemporaryDirectory();
       final File file = File('${directory.path}/$fileName');
       await file.writeAsString(content);
@@ -69,7 +67,8 @@ class _ExibirPdfPageState extends State<ExibirPdfPage> {
 
         String fileName = nomeArquivo;
 
-        String downloadedFilePath = await fileMock(fileName: 'downloadStepByStep.pdf');
+        String downloadedFilePath =
+            await fileMock(fileName: 'downloadStepByStep.pdf');
         File downloadedFile = File(downloadedFilePath);
         await _ftpConnect.downloadFile(fileName, downloadedFile);
 
@@ -79,6 +78,7 @@ class _ExibirPdfPageState extends State<ExibirPdfPage> {
         print('Downloading FAILED: ${e.toString()}');
       }
     }
+
     await downloadStepByStep(nomeArquivo);
   }
 }
